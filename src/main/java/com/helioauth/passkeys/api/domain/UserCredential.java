@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 
 @Entity
-@Table(name = "demo_registered_credential")
+@Table
 @Builder
 @Getter
 @Setter
