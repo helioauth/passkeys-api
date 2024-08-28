@@ -1,7 +1,9 @@
 package com.helioauth.passkeys.api.contract;
 
-public record StartAssertionRequest(String name) {
-    public StartAssertionRequest(String name) {
-        this.name = name.strip().toLowerCase();
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record StartAssertionRequest(@JsonProperty String name) {
+    public StartAssertionRequest {
+        name = name.strip().toLowerCase();
     }
 }
