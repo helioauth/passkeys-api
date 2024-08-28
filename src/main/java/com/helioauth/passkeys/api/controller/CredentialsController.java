@@ -6,6 +6,7 @@ import com.helioauth.passkeys.api.service.UserCredentialManager;
 import com.helioauth.passkeys.api.service.UserSignInService;
 import com.helioauth.passkeys.api.service.UserSignupService;
 
+import com.helioauth.passkeys.api.service.exception.SignInFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,17 @@ public class CredentialsController {
         } catch (JsonProcessingException e) {
             log.error("Sign in Credential failed", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sign in Credential failed");
+        }
+    }
+
+    @PostMapping(value = "/signin/finish", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SignInResponse finishSignInCredential(@RequestBody SignInFinishRequest request) {
+        try {
+            String username = userSignInService.finishAssertion(request.requestId(), request.publicKeyCredentialWithAssertion());
+            return new SignInResponse(request.requestId(), username);
+        } catch (SignInFailedException e) {
+            log.error("Sign in failed", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sign in failed");
         }
     }
 

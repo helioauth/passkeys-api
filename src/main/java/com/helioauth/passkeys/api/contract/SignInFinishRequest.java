@@ -1,6 +1,6 @@
 package com.helioauth.passkeys.api.contract;
 
-public record SignInValidateKeyRequest(
+public record SignInFinishRequest(
     String requestId,
     String publicKeyCredentialWithAssertion
 ) {
