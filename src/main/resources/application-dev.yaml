@@ -4,5 +4,5 @@ spring:
     username: demodb
     password: password
 
-relyingparty:
+relying-party:
   allow-origin-port: true

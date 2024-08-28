@@ -5,7 +5,7 @@ spring:
     hibernate:
       ddl-auto: update
 
-relyingparty:
+relying-party:
   display-name: HelioAuth Passkeys API
   hostname: localhost
   allow-origin-port: false
