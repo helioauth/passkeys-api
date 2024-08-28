@@ -3,6 +3,7 @@ package com.helioauth.passkeys.api.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.Column;
@@ -16,11 +17,12 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 
 @Entity
-@Table
+@Table(name = "user_credentials")
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserCredential {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -62,8 +64,4 @@ public class UserCredential {
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    protected UserCredential() {
-
-    }
 }

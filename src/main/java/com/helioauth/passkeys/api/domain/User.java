@@ -3,6 +3,7 @@ package com.helioauth.passkeys.api.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.CascadeType;
@@ -17,11 +18,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table
+@Table(name = "users")
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -36,8 +38,4 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCredential> userCredentials;
-
-    protected User() {
-
-    }
 }
