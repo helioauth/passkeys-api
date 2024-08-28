@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: passkeys-api
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+relyingparty:
+  display-name: HelioAuth Passkeys API
+  hostname: localhost
+  allow-origin-port: false

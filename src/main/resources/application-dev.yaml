@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/demodb
+    username: demodb
+    password: password
+
+relyingparty:
+  allow-origin-port: true
