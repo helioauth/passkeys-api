@@ -16,7 +16,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import org.testcontainers.utility.DockerImageName;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CredentialsControllerTest {
 
     @Container
-    static PostgreSQLContainer postgresql = new PostgreSQLContainer<>(DockerImageName.parse("postgres:15"));
+    static final PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>("postgres:15");
     
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
