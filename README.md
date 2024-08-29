@@ -73,15 +73,10 @@
 
 A well-documented REST API that helps developers implement WebAuthn in their web applications faster.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 ### Built With
 
  [![Spring Boot][Spring-Boot]][Spring-Boot-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
