@@ -34,7 +34,7 @@ import org.springframework.web.server.ResponseStatusException;
  * @author Viktor Stanchev
  */
 @RestController
-@RequestMapping("/v1/credentials")
+@RequestMapping("/v1")
 @Slf4j
 @RequiredArgsConstructor
 public class CredentialsController {
@@ -75,12 +75,12 @@ public class CredentialsController {
         }
     }
 
-    @PostMapping(value = "/add/start", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/credentials/add/start", produces = MediaType.APPLICATION_JSON_VALUE)
     public CreateCredentialResponse credentialsAddStart(@RequestBody String username) {
         return userCredentialManager.createCredential(username);
     }
 
-    @PostMapping(value = "/add/finish", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/credentials/add/finish", produces = MediaType.APPLICATION_JSON_VALUE)
     public FinishCredentialCreateResponse credentialsAddFinish(@RequestBody RegisterCredentialRequest request) {
         userCredentialManager.finishCreateCredential(request);
         return new FinishCredentialCreateResponse(request.requestId());
