@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor User
+    participant Browser
+    participant PasskeyAPI as Passkeys API
+    participant Authenticator as Device Authenticator
+    participant Backend as Your Backend
+
+    User->>Browser: Initiates sign-in
+    Browser->>PasskeyAPI: POST /v1/signin/start (username)
+    PasskeyAPI->>PasskeyAPI: Generate challenge
+    PasskeyAPI->>Browser: Return challenge, rpID, allowCredentials
+    Browser->>Authenticator: Get assertion (challenge, rpID, allowCredentials)
+    Authenticator->>User: Prompt for biometric/PIN
+    User->>Authenticator: Provide biometric/PIN
+    Authenticator->>Browser: Return assertion
+    Browser->>Backend: POST /login (assertion)
+    Backend->>PasskeyAPI: POST /v1/signin/finish (assertion)
+    PasskeyAPI->>PasskeyAPI: Verify assertion
+    PasskeyAPI->>Backend: Return verification result
+    Backend->>Browser: Authentication success + session/JWT token in cookie
+    Browser->>User: Redirect to dashboard
