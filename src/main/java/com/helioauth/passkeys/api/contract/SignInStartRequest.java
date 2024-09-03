@@ -21,8 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author Viktor Stanchev
  */
-public record StartAssertionRequest(@JsonProperty String name) {
-    public StartAssertionRequest {
+public record SignInStartRequest(@JsonProperty String name) {
+    public SignInStartRequest {
         name = name.strip().toLowerCase();
     }
 }

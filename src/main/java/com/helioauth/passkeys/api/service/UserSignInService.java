@@ -17,7 +17,7 @@
 package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.StartAssertionResponse;
+import com.helioauth.passkeys.api.contract.SignInStartResponse;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResultDto;
 import com.helioauth.passkeys.api.service.exception.SignInFailedException;
@@ -39,7 +39,7 @@ public class UserSignInService {
 
     private final WebAuthnAuthenticator webAuthnAuthenticator;
 
-    public StartAssertionResponse startAssertion(String name) throws JsonProcessingException {
+    public SignInStartResponse startAssertion(String name) throws JsonProcessingException {
         return webAuthnAuthenticator.startAssertion(name);
     }
 

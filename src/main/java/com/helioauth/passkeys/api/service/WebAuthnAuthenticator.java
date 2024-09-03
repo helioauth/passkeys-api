@@ -17,8 +17,8 @@
 package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.StartAssertionResponse;
 import com.helioauth.passkeys.api.contract.SignUpStartResponse;
+import com.helioauth.passkeys.api.contract.SignInStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResultDto;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResultDto;
@@ -114,7 +114,7 @@ public class WebAuthnAuthenticator {
         }
     }
 
-    public StartAssertionResponse startAssertion(String name) throws JsonProcessingException {
+    public SignInStartResponse startAssertion(String name) throws JsonProcessingException {
         AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
                 .username(name)
                 .build());
@@ -122,7 +122,7 @@ public class WebAuthnAuthenticator {
         String requestId = generateRandom(32).getHex();
         cache.put(requestId, request.toJson());
 
-        return new StartAssertionResponse(requestId, request.toCredentialsGetJson());
+        return new SignInStartResponse(requestId, request.toCredentialsGetJson());
     }
 
     public CredentialAssertionResultDto finishAssertion(String requestId, String publicKeyCredentialJson) throws IOException {

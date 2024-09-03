@@ -17,7 +17,7 @@
 package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.CreateCredentialResponse;
+import com.helioauth.passkeys.api.contract.SignUpStartResponse;
 import com.helioauth.passkeys.api.domain.User;
 import com.helioauth.passkeys.api.domain.UserCredential;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;

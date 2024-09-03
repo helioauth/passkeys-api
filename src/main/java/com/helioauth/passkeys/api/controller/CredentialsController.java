@@ -55,9 +55,9 @@ public class CredentialsController {
     }
 
     @PostMapping(value = "/signin/start", produces = MediaType.APPLICATION_JSON_VALUE)
-    public StartAssertionResponse postSignInCredential(@RequestBody StartAssertionRequest startAssertionRequest) {
+    public SignInStartResponse postSignInCredential(@RequestBody SignInStartRequest request) {
         try {
-            return userSignInService.startAssertion(startAssertionRequest.name());
+            return userSignInService.startAssertion(request.name());
         } catch (JsonProcessingException e) {
             log.error("Sign in Credential failed", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sign in Credential failed");

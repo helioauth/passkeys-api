@@ -17,7 +17,7 @@
 package com.helioauth.passkeys.api.controller;
 
 import com.helioauth.passkeys.api.contract.SignUpStartRequest;
-import com.helioauth.passkeys.api.contract.StartAssertionRequest;
+import com.helioauth.passkeys.api.contract.SignInStartRequest;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -83,7 +83,7 @@ class CredentialsControllerTest {
     
     @Test
     void postSignInStart() throws Exception {
-        StartAssertionRequest request = new StartAssertionRequest("test");
+        SignInStartRequest request = new SignInStartRequest("test");
 
         String requestJson = objectMapper.writeValueAsString(request);
 

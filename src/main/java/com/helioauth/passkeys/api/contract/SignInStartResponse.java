@@ -19,4 +19,4 @@ package com.helioauth.passkeys.api.contract;
 /**
  * @author Viktor Stanchev
  */
-public record StartAssertionResponse(String requestId, String credentialsGetOptions) { }
+public record SignInStartResponse(String requestId, String credentialsGetOptions) { }
