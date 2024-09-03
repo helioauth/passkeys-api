@@ -49,9 +49,9 @@ public class CredentialsController {
     }
 
     @PostMapping(value = "/signup/finish", produces = MediaType.APPLICATION_JSON_VALUE)
-    public FinishCredentialCreateResponse postRegisterCredential(@RequestBody RegisterCredentialRequest request) {
+    public SignUpFinishResponse postSignupFinish(@RequestBody SignUpFinishRequest request) {
         userSignupService.finishRegistration(request.requestId(), request.publicKeyCredential());
-        return new FinishCredentialCreateResponse(request.requestId());
+        return new SignUpFinishResponse(request.requestId());
     }
 
     @PostMapping(value = "/signin/start", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -81,8 +81,8 @@ public class CredentialsController {
     }
 
     @PostMapping(value = "/credentials/add/finish", produces = MediaType.APPLICATION_JSON_VALUE)
-    public FinishCredentialCreateResponse credentialsAddFinish(@RequestBody RegisterCredentialRequest request) {
+    public SignUpFinishResponse credentialsAddFinish(@RequestBody SignUpFinishRequest request) {
         userCredentialManager.finishCreateCredential(request);
-        return new FinishCredentialCreateResponse(request.requestId());
+        return new SignUpFinishResponse(request.requestId());
     }
 }

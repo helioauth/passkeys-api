@@ -19,4 +19,4 @@ package com.helioauth.passkeys.api.contract;
 /**
  * @author Viktor Stanchev
  */
-public record FinishCredentialCreateResponse(String requestId) { }
+public record SignUpFinishResponse(String requestId) { }
