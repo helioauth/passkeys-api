@@ -16,7 +16,7 @@
 
 package com.helioauth.passkeys.api.controller;
 
-import com.helioauth.passkeys.api.contract.CreateCredentialRequest;
+import com.helioauth.passkeys.api.contract.SignUpStartRequest;
 import com.helioauth.passkeys.api.contract.StartAssertionRequest;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
@@ -71,7 +71,7 @@ class CredentialsControllerTest {
 
     @Test
     void postSignUpStart() throws Exception {
-        CreateCredentialRequest request = new CreateCredentialRequest("test");
+        SignUpStartRequest request = new SignUpStartRequest("test");
 
         String requestJson = objectMapper.writeValueAsString(request);
 

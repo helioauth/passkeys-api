@@ -16,15 +16,13 @@
 
 package com.helioauth.passkeys.api.contract;
 
-import lombok.Builder;
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Viktor Stanchev
  */
-@Value
-@Builder
-public class CreateCredentialResponse {
-    String requestId;
-    String publicKeyCredentialCreationOptions;
+public record SignUpStartRequest(@JsonProperty String name) {
+    public SignUpStartRequest {
+        name = name.strip().toLowerCase();
+    }
 }

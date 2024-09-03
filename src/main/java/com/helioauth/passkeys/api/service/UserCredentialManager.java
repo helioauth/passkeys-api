@@ -45,7 +45,7 @@ public class UserCredentialManager {
     private final UserCredentialRepository userCredentialRepository;
     private final UserCredentialMapper userCredentialMapper;
 
-    public CreateCredentialResponse createCredential(String name) {
+    public SignUpStartResponse createCredential(String name) {
         try {
             return webAuthnAuthenticator.startRegistration(name);
         } catch (JsonProcessingException e) {

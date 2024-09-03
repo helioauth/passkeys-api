@@ -17,8 +17,8 @@
 package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.CreateCredentialResponse;
 import com.helioauth.passkeys.api.contract.StartAssertionResponse;
+import com.helioauth.passkeys.api.contract.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResultDto;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResultDto;
@@ -59,7 +59,7 @@ public class WebAuthnAuthenticator {
 
     private final CredentialRegistrationResultMapper credentialRegistrationResultMapper;
 
-    public CreateCredentialResponse startRegistration(String name) throws JsonProcessingException {
+    public SignUpStartResponse startRegistration(String name) throws JsonProcessingException {
         ByteArray id = generateRandom(32);
 
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
@@ -83,10 +83,10 @@ public class WebAuthnAuthenticator {
         String requestId = id.getHex();
         cache.put(requestId, request.toJson());
 
-        return CreateCredentialResponse.builder()
-                .requestId(requestId)
-                .publicKeyCredentialCreationOptions(request.toCredentialsCreateJson())
-                .build();
+        return new SignUpStartResponse(
+            requestId,
+            request.toCredentialsCreateJson()
+        );
     }
 
     public CredentialRegistrationResultDto finishRegistration(String requestId, String publicKeyCredentialJson) throws IOException {

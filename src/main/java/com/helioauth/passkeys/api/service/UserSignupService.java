@@ -46,7 +46,7 @@ public class UserSignupService {
     private final WebAuthnAuthenticator webAuthnAuthenticator;
     private final UserCredentialMapper usercredentialMapper;
 
-    public CreateCredentialResponse startRegistration(String name) {
+    public SignUpStartResponse startRegistration(String name) {
         userRepository.findByName(name).ifPresent(_ -> {
             throw new UsernameAlreadyRegisteredException();
         });

@@ -44,8 +44,8 @@ public class CredentialsController {
     private final UserCredentialManager userCredentialManager;
 
     @PostMapping(value = "/signup/start", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CreateCredentialResponse postCreateCredential(@RequestBody CreateCredentialRequest createCredentialRequest) {
-        return userSignupService.startRegistration(createCredentialRequest.name());
+    public SignUpStartResponse postSignupStart(@RequestBody SignUpStartRequest request) {
+        return userSignupService.startRegistration(request.name());
     }
 
     @PostMapping(value = "/signup/finish", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,7 +76,7 @@ public class CredentialsController {
     }
 
     @PostMapping(value = "/credentials/add/start", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CreateCredentialResponse credentialsAddStart(@RequestBody String username) {
+    public SignUpStartResponse credentialsAddStart(@RequestBody String username) {
         return userCredentialManager.createCredential(username);
     }
 
