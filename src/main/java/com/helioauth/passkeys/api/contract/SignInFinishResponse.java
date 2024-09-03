@@ -19,7 +19,7 @@ package com.helioauth.passkeys.api.contract;
 /**
  * @author Viktor Stanchev
  */
-public record SignInResponse(
+public record SignInFinishResponse(
     String requestId,
     String username
 ) {

@@ -65,10 +65,10 @@ public class CredentialsController {
     }
 
     @PostMapping(value = "/signin/finish", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignInResponse finishSignInCredential(@RequestBody SignInFinishRequest request) {
+    public SignInFinishResponse finishSignInCredential(@RequestBody SignInFinishRequest request) {
         try {
             String username = userSignInService.finishAssertion(request.requestId(), request.publicKeyCredentialWithAssertion());
-            return new SignInResponse(request.requestId(), username);
+            return new SignInFinishResponse(request.requestId(), username);
         } catch (SignInFailedException e) {
             log.error("Sign in failed", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sign in failed");
