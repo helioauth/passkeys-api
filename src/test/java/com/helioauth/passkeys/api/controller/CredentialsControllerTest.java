@@ -43,7 +43,9 @@ class CredentialsControllerTest {
 
     @Container
     static final PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>("postgres:15");
-    
+    public static final String PATH_SIGNUP_START = "/v1/signup/start";
+    public static final String PATH_SIGNIN_START = "/v1/signin/start";
+
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
         postgresql.start();
@@ -75,7 +77,7 @@ class CredentialsControllerTest {
 
         String requestJson = objectMapper.writeValueAsString(request);
 
-        mockMvc.perform(post("/v1/credentials/signup/start")
+        mockMvc.perform(post(PATH_SIGNUP_START)
                 .contentType("application/json")
                 .content(requestJson)
             ).andExpect(status().isOk());
@@ -87,7 +89,7 @@ class CredentialsControllerTest {
 
         String requestJson = objectMapper.writeValueAsString(request);
 
-        mockMvc.perform(post("/v1/credentials/signin/start")
+        mockMvc.perform(post(PATH_SIGNIN_START)
             .contentType("application/json")
             .content(requestJson)
         ).andExpect(status().isOk());
