@@ -25,7 +25,7 @@
 <h3 align="center">HelioAuth Passkeys API</h3>
 
   <p align="center">
-    A passwordless authentication solution for modern web applications 
+    A passwordless authentication solution for modern and traditional web applications 
     <br />
     <a href="https://github.com/helioauth/passkeys-api"><strong>Explore the docs »</strong></a>
     <br />
@@ -83,13 +83,13 @@ A well-documented REST API that helps developers implement WebAuthn in their web
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple example steps.
+To get a local copy up and running, follow these simple steps.
 
 ### Prerequisites
 
  * Java 22
  * Maven
- * Docker (or similar) for local PostgreSQL instance
+ * Docker (or similar) for a local PostgreSQL instance
 
 ### Installation
 
@@ -99,30 +99,30 @@ To get a local copy up and running follow these simple example steps.
    git clone https://github.com/helioauth/passkeys-api.git
    ```
 2. Install dependencies
-  ```sh
+   ```sh
     cd passkeys-api-demo
     ./mvnw install
-  ```
+   ```
 3. Start PostgreSQL server
 
-  ```bash
+   ```bash
     docker-compose up -d
-  ```
+   ```
 
 4. Start the application in development mode
-  ```sh
+   ```sh
     ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
-  ```
+   ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-The Passkeys API handles all WebAuthn related actions like issuing challenges, verifying signatures and storing public keys.
-Your frontend app should request a challenge from the API, pass it to the browser then return the result.
+The Passkeys API handles all WebAuthn related actions like issuing challenges,
+verifying signatures, and storing public keys.
+Your frontend app should request a challenge from the API, pass it to the browser, then return the result.
 
 ### Sign-up flow
 
@@ -202,8 +202,8 @@ See the [open issues](https://github.com/helioauth/passkeys-api/issues) for a fu
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and create a pull request.
+You can also open an issue with the tag "enhancement". Remember to give the project a star! Thanks again!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
