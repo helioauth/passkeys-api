@@ -30,6 +30,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.validation.Valid;
+
 /**
  * @author Viktor Stanchev
  */
@@ -44,7 +46,7 @@ public class CredentialsController {
     private final UserCredentialManager userCredentialManager;
 
     @PostMapping(value = "/signup/start", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignUpStartResponse postSignupStart(@RequestBody SignUpStartRequest request) {
+    public SignUpStartResponse postSignupStart(@RequestBody @Valid SignUpStartRequest request) {
         return userSignupService.startRegistration(request.name());
     }
 
