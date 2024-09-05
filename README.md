@@ -187,6 +187,7 @@ _For more examples, please refer to the [Demo](https://github.com/helioauth/pass
 
 - [x] Sign-up and sign-in with passkeys
 - [ ] Support for more than one passkey per user
+- [ ] Multitenancy, app projects
 - [ ] Backup authentication method via magic links, OTP or other
 - [ ] Administration endpoints for user and credential management
 - [ ] Support applications that don't have a backend. Generate JWT with custom fields.
