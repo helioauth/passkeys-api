@@ -62,7 +62,6 @@ public class UserSignupService {
     @Transactional
     public void finishRegistration(String requestId, String publicKeyCredentialJson) {
         try {
-            // TODO fix user handle to be the same for all registered credentials and save in user entity
             CredentialRegistrationResultDto result = webAuthnAuthenticator.finishRegistration(requestId, publicKeyCredentialJson);
 
             User user = User.builder()

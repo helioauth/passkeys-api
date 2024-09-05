@@ -60,6 +60,7 @@ public class WebAuthnAuthenticator {
     private final CredentialRegistrationResultMapper credentialRegistrationResultMapper;
 
     public SignUpStartResponse startRegistration(String name) throws JsonProcessingException {
+        // TODO Allow user id (user handle) to be passed as argument so that a user can have more than one credential
         ByteArray id = generateRandom(32);
 
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
