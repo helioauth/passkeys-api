@@ -16,14 +16,13 @@
 
 package com.helioauth.passkeys.api.contract;
 
-import lombok.Builder;
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 
 /**
  * @author Viktor Stanchev
  */
 public record SignUpStartResponse(
     String requestId,
-    String publicKeyCredentialCreationOptions
+    @JsonRawValue String options
 ) {
 }

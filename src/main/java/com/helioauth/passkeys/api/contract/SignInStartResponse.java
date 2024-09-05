@@ -16,7 +16,12 @@
 
 package com.helioauth.passkeys.api.contract;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+
 /**
  * @author Viktor Stanchev
  */
-public record SignInStartResponse(String requestId, String credentialsGetOptions) { }
+public record SignInStartResponse(
+    String requestId,
+    @JsonRawValue String options
+) { }
