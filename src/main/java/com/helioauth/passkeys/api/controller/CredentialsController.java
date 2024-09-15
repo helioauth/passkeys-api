@@ -52,8 +52,7 @@ public class CredentialsController {
 
     @PostMapping(value = "/signup/finish", produces = MediaType.APPLICATION_JSON_VALUE)
     public SignUpFinishResponse postSignupFinish(@RequestBody SignUpFinishRequest request) {
-        userSignupService.finishRegistration(request.requestId(), request.publicKeyCredential());
-        return new SignUpFinishResponse(request.requestId());
+        return userSignupService.finishRegistration(request.requestId(), request.publicKeyCredential());
     }
 
     @PostMapping(value = "/signin/start", produces = MediaType.APPLICATION_JSON_VALUE)

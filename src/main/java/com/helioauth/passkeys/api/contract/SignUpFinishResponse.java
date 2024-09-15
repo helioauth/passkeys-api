@@ -16,7 +16,12 @@
 
 package com.helioauth.passkeys.api.contract;
 
+import java.util.UUID;
+
 /**
  * @author Viktor Stanchev
  */
-public record SignUpFinishResponse(String requestId) { }
+public record SignUpFinishResponse(
+    String requestId,
+    UUID userId
+) { }
