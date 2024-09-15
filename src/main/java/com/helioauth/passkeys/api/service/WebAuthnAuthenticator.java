@@ -28,8 +28,8 @@ import com.yubico.webauthn.*;
 import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -45,19 +45,30 @@ import com.github.benmanes.caffeine.cache.Caffeine;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class WebAuthnAuthenticator {
 
     private final RelyingParty relyingParty;
 
-    private final Cache<String, String> cache = Caffeine.newBuilder()
-            .expireAfterWrite(Duration.ofMinutes(5))
-            .maximumSize(1000)
-            .build();
+    private final CredentialRegistrationResultMapper credentialRegistrationResultMapper;
+
+    private final Cache<String, String> cache;
 
     private static final SecureRandom random = new SecureRandom();
 
-    private final CredentialRegistrationResultMapper credentialRegistrationResultMapper;
+    public WebAuthnAuthenticator(
+            RelyingParty relyingParty,
+            CredentialRegistrationResultMapper credentialRegistrationResultMapper,
+            @Value("${helioauth.webauthn.cache.expiration:5m}") Duration cacheExpiration,
+            @Value("${helioauth.webauthn.cache.max-size:1000}") Integer maximumSize
+    ) {
+        this.relyingParty = relyingParty;
+        this.credentialRegistrationResultMapper = credentialRegistrationResultMapper;
+
+        this.cache = Caffeine.newBuilder()
+            .expireAfterWrite(cacheExpiration)
+            .maximumSize(maximumSize)
+            .build();
+    }
 
     public SignUpStartResponse startRegistration(String name) throws JsonProcessingException {
         // TODO Allow user id (user handle) to be passed as argument so that a user can have more than one credential
