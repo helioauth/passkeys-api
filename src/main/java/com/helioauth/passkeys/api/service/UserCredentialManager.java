@@ -18,6 +18,7 @@ package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.helioauth.passkeys.api.contract.SignUpFinishRequest;
+import com.helioauth.passkeys.api.contract.SignUpFinishResponse;
 import com.helioauth.passkeys.api.contract.SignUpStartResponse;
 import com.helioauth.passkeys.api.domain.User;
 import com.helioauth.passkeys.api.domain.UserCredential;
@@ -54,7 +55,7 @@ public class UserCredentialManager {
         }
     }
 
-    public void finishCreateCredential(SignUpFinishRequest request) {
+    public SignUpFinishResponse finishCreateCredential(SignUpFinishRequest request) {
         try {
             CredentialRegistrationResultDto result = webAuthnAuthenticator.finishRegistration(
                     request.requestId(),
@@ -66,6 +67,8 @@ public class UserCredentialManager {
             UserCredential userCredential = userCredentialMapper.fromCredentialRegistrationResult(result);
             userCredential.setUser(user);
             userCredentialRepository.save(userCredential);
+
+            return new SignUpFinishResponse(request.requestId(), user.getId());
         } catch (IOException e) {
             log.error("Register Credential failed", e);
             throw new SignUpFailedException();

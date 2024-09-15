@@ -83,7 +83,6 @@ public class CredentialsController {
 
     @PostMapping(value = "/credentials/add/finish", produces = MediaType.APPLICATION_JSON_VALUE)
     public SignUpFinishResponse credentialsAddFinish(@RequestBody SignUpFinishRequest request) {
-        userCredentialManager.finishCreateCredential(request);
-        return new SignUpFinishResponse(request.requestId());
+        return userCredentialManager.finishCreateCredential(request);
     }
 }
