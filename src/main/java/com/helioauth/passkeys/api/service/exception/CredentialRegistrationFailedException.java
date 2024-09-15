@@ -24,5 +24,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "There was a problem signing you up. Please, try again.")
 public class CredentialRegistrationFailedException extends RuntimeException {
+    public CredentialRegistrationFailedException(String message) {
+        super(message);
+    }
 
+    public CredentialRegistrationFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

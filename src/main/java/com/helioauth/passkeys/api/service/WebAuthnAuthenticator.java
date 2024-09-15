@@ -96,7 +96,7 @@ public class WebAuthnAuthenticator {
 
         String requestJson = cache.getIfPresent(requestId);
         if (requestJson == null) {
-            throw new CredentialRegistrationFailedException();
+            throw new CredentialRegistrationFailedException("Request not found.");
         }
         cache.invalidate(requestId);
 
@@ -111,7 +111,7 @@ public class WebAuthnAuthenticator {
             return credentialRegistrationResultMapper.fromRegistrationResult(result, request.getUser(), pkc.getResponse());
 
         } catch (RegistrationFailedException e) {
-            throw new CredentialRegistrationFailedException();
+            throw new CredentialRegistrationFailedException(e.getMessage(), e);
         }
     }
 
