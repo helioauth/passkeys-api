@@ -6,3 +6,9 @@ spring:
 
 relying-party:
   allow-origin-port: true
+
+helioauth:
+  webauthn:
+    cache:
+      expiration: 999m
+      max-size: 99999
