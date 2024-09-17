@@ -146,9 +146,11 @@ sequenceDiagram
     User->>Authenticator: Provide biometric/PIN
     Authenticator->>Browser: Return credential
     Browser->>Backend: POST /signup (username, displayName, credential, etc)
+    Backend->>Backend: Validate user details
     Backend->>PasskeyAPI: POST /v1/signup/finish (credential)
     PasskeyAPI->>PasskeyAPI: Verify and store credential
     PasskeyAPI->>Backend: Return verification result
+    Backend->>Backend: Store user details
     Backend->>Browser: Registration success
     Browser->>User: Display success message
 ```
