@@ -39,6 +39,8 @@
 </div>
 
 
+> [!WARNING]
+> This project is in currently in active development and still not production-ready. You can try it out but expect breaking changes.
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -72,6 +74,7 @@
 ## About The Project
 
 A well-documented REST API that helps developers implement WebAuthn in their web applications faster.
+
 
 
 ### Built With
