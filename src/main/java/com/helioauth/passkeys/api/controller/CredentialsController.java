@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/v1")
+@CrossOrigin(origins = "*")
 @Slf4j
 @RequiredArgsConstructor
 public class CredentialsController {
