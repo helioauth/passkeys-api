@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Viktor Stanchev
@@ -30,7 +31,7 @@ import java.util.Optional;
 public interface UserCredentialRepository extends JpaRepository<UserCredential, Long> {
     Optional<UserCredential> findFirstByUserName(String username);
 
-    List<UserCredential> findAllByUserName(String username);
+    List<UserCredential> findAllByUserId(UUID userUuid);
 
     List<UserCredential> findAllByUserHandle(String base64EncodedUserHandle);
 
