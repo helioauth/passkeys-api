@@ -80,7 +80,7 @@ public class UserCredential {
     @Column
     private Instant lastUsedAt;
 
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = User.class, fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
