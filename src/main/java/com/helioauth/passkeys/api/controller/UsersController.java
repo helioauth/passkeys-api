@@ -16,10 +16,12 @@
 
 package com.helioauth.passkeys.api.controller;
 
+import com.helioauth.passkeys.api.service.UserAccountManager;
 import com.helioauth.passkeys.api.service.UserCredentialManager;
 import com.helioauth.passkeys.api.service.dto.ListPasskeysResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,9 +38,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UsersController {
     private final UserCredentialManager userCredentialManager;
+    private final UserAccountManager userAccountManager;
 
     @GetMapping("/{uuid}/credentials")
     public ListPasskeysResponse getUserCredentials(@PathVariable UUID uuid) {
         return userCredentialManager.getUserCredentials(uuid);
+    }
+
+    @DeleteMapping("/{uuid}")
+    public void deleteUser(@PathVariable UUID uuid) {
+        userAccountManager.deleteUser(uuid);
     }
 }
