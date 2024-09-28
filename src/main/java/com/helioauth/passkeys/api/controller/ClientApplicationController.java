@@ -33,11 +33,9 @@ import java.util.UUID;
  * @author Viktor Stanchev
  */
 @RestController
-@RequestMapping("/v1/apps")
+@RequestMapping("/admin/v1/apps")
 @RequiredArgsConstructor
 public class ClientApplicationController {
-
-    // TODO Secure this with a secret configurable in application.yaml
 
     private final ClientApplicationService clientApplicationService;
 
