@@ -1,4 +1,9 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
+
+admin:
+  auth:
+    api-key: testapikey
+    header-name: X-Api-Key
