@@ -16,12 +16,14 @@
 
 package com.helioauth.passkeys.api.contract;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.NotBlank;
 
 /**
  * @author Viktor Stanchev
  */
-public record SignUpStartRequest(@NotBlank String name) {
+public record SignUpStartRequest(@JsonProperty("name") @NotBlank String name) {
     public SignUpStartRequest {
         name = (name != null) ? name.strip().toLowerCase() : "";
     }
