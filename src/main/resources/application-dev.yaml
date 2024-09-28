@@ -12,3 +12,7 @@ helioauth:
     cache:
       expiration: 999m
       max-size: 99999
+
+admin:
+  auth:
+    api-key: devapikey
