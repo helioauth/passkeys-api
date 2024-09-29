@@ -17,8 +17,8 @@
 package com.helioauth.passkeys.api.config;
 
 import com.helioauth.passkeys.api.auth.RequestHeaderAuthenticationProvider;
+import com.helioauth.passkeys.api.config.properties.AdminConfigProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,14 +45,12 @@ import java.util.List;
 public class WebSecurityConfig {
     private final RequestHeaderAuthenticationProvider requestHeaderAuthenticationProvider;
 
-    @Value("${admin.auth.header-name:X-Api-Key}")
-    private String adminAuthHeaderName;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter) throws Exception {
 
-        http.cors(Customizer.withDefaults())
+        http
+            .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterAfter(requestHeaderAuthenticationFilter, HeaderWriterFilter.class)
@@ -68,12 +66,13 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter() {
+    public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(AuthenticationManager authenticationManager,
+                                                                               AdminConfigProperties adminConfigProperties) {
         RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
-        filter.setPrincipalRequestHeader(adminAuthHeaderName);
+        filter.setPrincipalRequestHeader(adminConfigProperties.getAuth().getHeaderName());
         filter.setExceptionIfHeaderMissing(false);
         filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/admin/**"));
-        filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationManager(authenticationManager);
 
         return filter;
     }
