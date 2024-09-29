@@ -16,7 +16,7 @@
 
 package com.helioauth.passkeys.api.config.properties;
 
-import lombok.Value;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
@@ -25,19 +25,19 @@ import java.time.Duration;
 /**
  * @author Viktor Stanchev
  */
-@Value
+@Data
 @ConfigurationProperties(prefix = "relying-party")
 @ConfigurationPropertiesScan
 public class WebAuthnRelyingPartyProperties {
-    String hostname;
-    String displayName;
-    boolean allowOriginPort;
-    Cache cache;
+    private String hostname;
+    private String displayName;
+    private boolean allowOriginPort;
+    private Cache cache;
 
-    @Value
+    @Data
     @ConfigurationProperties(prefix = "relying-party.cache")
     public static class Cache {
-        Duration expiration = Duration.ofMinutes(5);
-        Integer maxSize = 1000;
+        private Duration expiration = Duration.ofMinutes(5);
+        private Integer maxSize = 1000;
     }
 }

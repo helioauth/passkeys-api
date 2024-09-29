@@ -16,23 +16,23 @@
 
 package com.helioauth.passkeys.api.config.properties;
 
-import lombok.Value;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * @author Viktor Stanchev
  */
+@Data
 @ConfigurationProperties("admin")
 @ConfigurationPropertiesScan
-@Value
 public class AdminConfigProperties {
-    Auth auth;
+    private Auth auth;
 
+    @Data
     @ConfigurationProperties("admin.auth")
-    @Value
     public static class Auth {
-        String apiKey;
-        String headerName = "X-Api-Key";
+        private String apiKey;
+        private String headerName = "X-Api-Key";
     }
 }
