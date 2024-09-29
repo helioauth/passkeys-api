@@ -16,7 +16,8 @@
 
 package com.helioauth.passkeys.api.auth;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.helioauth.passkeys.api.config.properties.AdminConfigProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -31,15 +32,16 @@ import java.util.List;
  * @author Viktor Stanchev
  */
 @Service
+@RequiredArgsConstructor
 public class RequestHeaderAuthenticationProvider implements AuthenticationProvider {
 
-    @Value("${admin.auth.api-key}")
-    private String apiKey;
+    private final AdminConfigProperties adminConfigProperties;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String authHeaderValue = String.valueOf(authentication.getPrincipal());
 
+        String apiKey = adminConfigProperties.getAuth().getApiKey();
         if(authHeaderValue == null || authHeaderValue.isBlank() || !authHeaderValue.equals(apiKey)) {
             throw new BadCredentialsException("Bad admin credentials");
         }
