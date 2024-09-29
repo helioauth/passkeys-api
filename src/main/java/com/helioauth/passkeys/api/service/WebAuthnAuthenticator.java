@@ -17,28 +17,43 @@
 package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.SignUpStartResponse;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import com.helioauth.passkeys.api.contract.SignInStartResponse;
+import com.helioauth.passkeys.api.contract.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResultDto;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResultDto;
 import com.helioauth.passkeys.api.service.exception.CredentialAssertionFailedException;
 import com.helioauth.passkeys.api.service.exception.CredentialRegistrationFailedException;
-import com.yubico.webauthn.*;
-import com.yubico.webauthn.data.*;
+import com.yubico.webauthn.AssertionRequest;
+import com.yubico.webauthn.AssertionResult;
+import com.yubico.webauthn.FinishAssertionOptions;
+import com.yubico.webauthn.FinishRegistrationOptions;
+import com.yubico.webauthn.RegisteredCredential;
+import com.yubico.webauthn.RegistrationResult;
+import com.yubico.webauthn.RelyingParty;
+import com.yubico.webauthn.StartAssertionOptions;
+import com.yubico.webauthn.StartRegistrationOptions;
+import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
+import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
+import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
+import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
+import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
+import com.yubico.webauthn.data.PublicKeyCredential;
+import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import com.yubico.webauthn.data.ResidentKeyRequirement;
+import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.time.Duration;
 import java.time.Instant;
-
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 
 /**
  * @author Viktor Stanchev
@@ -58,15 +73,14 @@ public class WebAuthnAuthenticator {
     public WebAuthnAuthenticator(
             RelyingParty relyingParty,
             CredentialRegistrationResultMapper credentialRegistrationResultMapper,
-            @Value("${helioauth.webauthn.cache.expiration:5m}") Duration cacheExpiration,
-            @Value("${helioauth.webauthn.cache.max-size:1000}") Integer maximumSize
+            WebAuthnRelyingPartyProperties.Cache cacheConfig
     ) {
         this.relyingParty = relyingParty;
         this.credentialRegistrationResultMapper = credentialRegistrationResultMapper;
 
         this.cache = Caffeine.newBuilder()
-            .expireAfterWrite(cacheExpiration)
-            .maximumSize(maximumSize)
+            .expireAfterWrite(cacheConfig.getExpiration())
+            .maximumSize(cacheConfig.getMaxSize())
             .build();
     }
 
