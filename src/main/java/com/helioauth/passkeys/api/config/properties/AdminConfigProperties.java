@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package com.helioauth.passkeys.api.config;
+package com.helioauth.passkeys.api.config.properties;
 
+import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * @author Viktor Stanchev
  */
-@ConfigurationProperties(prefix = "relying-party")
+@ConfigurationProperties("admin")
 @ConfigurationPropertiesScan
-public record WebAuthnRelyingPartyProperties(
-        String hostname,
-        String displayName,
-        boolean allowOriginPort
-) { }
+@Value
+public class AdminConfigProperties {
+    Auth auth;
+
+    @ConfigurationProperties("admin.auth")
+    @Value
+    public static class Auth {
+        String apiKey;
+        String headerName = "X-Api-Key";
+    }
+}
