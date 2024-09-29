@@ -16,6 +16,7 @@
 
 package com.helioauth.passkeys.api.config;
 
+import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import com.helioauth.passkeys.api.webauthn.DatabaseCredentialRepository;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
@@ -34,14 +35,14 @@ public class WebAuthnRelyingPartyConfig {
         WebAuthnRelyingPartyProperties properties
     ) {
         RelyingPartyIdentity rpId = RelyingPartyIdentity.builder()
-                .id(properties.hostname())
-                .name(properties.displayName())
+                .id(properties.getHostname())
+                .name(properties.getDisplayName())
                 .build();
 
         return RelyingParty.builder()
                 .identity(rpId)
                 .credentialRepository(databaseCredentialRepository)
-                .allowOriginPort(properties.allowOriginPort())
+                .allowOriginPort(properties.isAllowOriginPort())
                 .build();
     }
 }
