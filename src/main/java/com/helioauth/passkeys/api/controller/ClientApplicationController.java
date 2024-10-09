@@ -16,15 +16,15 @@
 
 package com.helioauth.passkeys.api.controller;
 
-import com.helioauth.passkeys.api.contract.AddClientApplicationRequest;
+import com.helioauth.passkeys.api.generated.api.ApplicationsApi;
+import com.helioauth.passkeys.api.generated.models.AddApplicationRequest;
+import com.helioauth.passkeys.api.generated.models.Application;
+import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
+import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import com.helioauth.passkeys.api.service.ClientApplicationService;
-import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKeyDTO;
 import com.helioauth.passkeys.api.service.dto.ClientApplicationDTO;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +35,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -45,54 +45,60 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/admin/v1/apps")
 @RequiredArgsConstructor
-@Tag(name = "Applications", description = "CRUD operations for client applications.")
-@SecurityRequirement(name = "admin-api")
-public class ClientApplicationController {
+public class ClientApplicationController implements ApplicationsApi {
 
     private final ClientApplicationService clientApplicationService;
 
+    private final ClientApplicationMapper clientApplicationMapper;
+
     @GetMapping
-    @Operation(summary = "List all applications", description = "Retrieves a list of all applications.")
-    public List<ClientApplicationDTO> listAll() {
-        return clientApplicationService.listAll();
+    @Override
+    public ResponseEntity<List<Application>> listAll() {
+        return ResponseEntity.ok(clientApplicationMapper.toApplicationResponse(
+            clientApplicationService.listAll()
+        ));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get an application", description = "Retrieves details of a specific application by its ID.")
-    public ResponseEntity<ClientApplicationDTO> get(@PathVariable UUID id) {
+    @Override
+    public ResponseEntity<Application> get(@PathVariable UUID id) {
         return clientApplicationService.get(id)
-                .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(dto -> ResponseEntity.ok(clientApplicationMapper.toApplicationResponse(dto)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}/api-key")
-    @Operation(summary = "Get an application's API key", description = "Retrieves the API key of a specific application by its ID.")
-    public ResponseEntity<ClientApplicationApiKeyDTO> getApiKey(@PathVariable UUID id) {
+    @Override
+    public ResponseEntity<ApplicationApiKey> getApiKey(@PathVariable UUID id) {
         return clientApplicationService.getApiKey(id)
-                .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(dto -> ResponseEntity.ok(clientApplicationMapper.toApplicationApiKeyResponse(dto)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    @Operation(summary = "Add a new application", description = "Creates a new application and returns its details.")
-    public ResponseEntity<ClientApplicationDTO> add(@RequestBody AddClientApplicationRequest request) {
-        ClientApplicationDTO created = clientApplicationService.add(request);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    @Override
+    public ResponseEntity<Application> add(@RequestBody AddApplicationRequest request) {
+        ClientApplicationDTO created = clientApplicationService.add(request.getName());
+
+        return ResponseEntity.created(URI.create("/admin/v1/apps/" + created.id()))
+            .body(clientApplicationMapper.toApplicationResponse(created));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Edit an application", description = "Updates the name of a specific application by its ID.")
-    public ResponseEntity<ClientApplicationDTO> edit(@PathVariable UUID id, @RequestBody String name) {
-        Optional<ClientApplicationDTO> updated = clientApplicationService.edit(id, name);
+    @Override
+    public ResponseEntity<Application> edit(@PathVariable UUID id, @RequestBody String name) {
+        val updated = clientApplicationService.edit(id, name);
+
         return updated
-                .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            .map(clientApplicationDTO -> ResponseEntity.ok(clientApplicationMapper.toApplicationResponse(clientApplicationDTO)))
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an application", description = "Deletes a specific application by its ID.")
+    @Override
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         boolean deleted = clientApplicationService.delete(id);
-        return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
