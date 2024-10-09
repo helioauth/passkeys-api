@@ -1,14 +1,14 @@
 package com.helioauth.passkeys.api.service;
 
-import com.helioauth.passkeys.api.contract.AddClientApplicationRequest;
 import com.helioauth.passkeys.api.domain.ClientApplication;
+import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKeyDTO;
 import com.helioauth.passkeys.api.service.dto.ClientApplicationDTO;
-import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -19,8 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,12 +56,19 @@ public class ClientApplicationServiceTest {
     @Test
     public void addClientApplicationTest() {
         // Setup
+        ArgumentCaptor<ClientApplication> argumentCaptor = ArgumentCaptor.forClass(ClientApplication.class);
         when(repository.save(any(ClientApplication.class))).thenReturn(CLIENT_APPLICATION);
 
         // Execute
-        ClientApplicationDTO result = service.add(new AddClientApplicationRequest(DTO.name()));
+        ClientApplicationDTO result = service.add(DTO.name());
+
+        // Capture the argument
+        verify(repository).save(argumentCaptor.capture());
+        ClientApplication savedClientApplication = argumentCaptor.getValue();
 
         // Validate
+        assertFalse(savedClientApplication.getApiKey().isEmpty());
+        assertEquals(DTO.name(), savedClientApplication.getName());
         assertEquals(DTO.name(), result.name());
     }
 

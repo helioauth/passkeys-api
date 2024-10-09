@@ -16,12 +16,11 @@
 
 package com.helioauth.passkeys.api.service;
 
-import com.helioauth.passkeys.api.contract.AddClientApplicationRequest;
 import com.helioauth.passkeys.api.domain.ClientApplication;
+import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKeyDTO;
 import com.helioauth.passkeys.api.service.dto.ClientApplicationDTO;
-import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,10 +57,10 @@ public class ClientApplicationService {
         );
     }
 
-    public ClientApplicationDTO add(AddClientApplicationRequest dto) {
+    public ClientApplicationDTO add(String name) {
         return mapper.toDto(
             repository.save(
-                new ClientApplication(dto.name(), generateApiKey())
+                new ClientApplication(name, generateApiKey())
             )
         );
     }
