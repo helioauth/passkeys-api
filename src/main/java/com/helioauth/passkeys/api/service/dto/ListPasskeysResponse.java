@@ -21,4 +21,4 @@ import java.util.List;
 /**
  * @author Viktor Stanchev
  */
-public record ListPasskeysResponse(List<UserCredentialDTO> passkeys) {}
+public record ListPasskeysResponse(List<PasskeyItem> passkeys) {}

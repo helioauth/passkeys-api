@@ -16,7 +16,7 @@
 
 package com.helioauth.passkeys.api.mapper;
 
-import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResultDto;
+import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.UserIdentity;
@@ -37,5 +37,5 @@ public interface CredentialRegistrationResultMapper {
     @Mapping(target = "isDiscoverable", expression = "java(registrationResult.isDiscoverable().orElse(false))")
     @Mapping(target = "attestationObject", source = "authenticatorResponse.attestationObject.base64")
     @Mapping(target = "clientDataJson", source = "authenticatorResponse.clientDataJSON.base64")
-    CredentialRegistrationResultDto fromRegistrationResult(RegistrationResult registrationResult, UserIdentity userIdentity, AuthenticatorAttestationResponse authenticatorResponse);
+    CredentialRegistrationResult fromRegistrationResult(RegistrationResult registrationResult, UserIdentity userIdentity, AuthenticatorAttestationResponse authenticatorResponse);
 }

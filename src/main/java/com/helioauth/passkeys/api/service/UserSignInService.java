@@ -19,7 +19,7 @@ package com.helioauth.passkeys.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.helioauth.passkeys.api.contract.SignInStartResponse;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
-import com.helioauth.passkeys.api.service.dto.CredentialAssertionResultDto;
+import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
 import com.helioauth.passkeys.api.service.exception.SignInFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class UserSignInService {
     @Transactional
     public String finishAssertion(String requestId, String publicKeyCredentialJson) {
         try {
-            CredentialAssertionResultDto result = webAuthnAuthenticator.finishAssertion(requestId, publicKeyCredentialJson);
+            CredentialAssertionResult result = webAuthnAuthenticator.finishAssertion(requestId, publicKeyCredentialJson);
 
             userCredentialRepository.updateUsageByUserHandleAndCredentialId(
                     result.signatureCount(),

@@ -23,8 +23,8 @@ import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperti
 import com.helioauth.passkeys.api.contract.SignInStartResponse;
 import com.helioauth.passkeys.api.contract.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
-import com.helioauth.passkeys.api.service.dto.CredentialAssertionResultDto;
-import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResultDto;
+import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
+import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.CredentialAssertionFailedException;
 import com.helioauth.passkeys.api.service.exception.CredentialRegistrationFailedException;
 import com.yubico.webauthn.AssertionRequest;
@@ -115,7 +115,7 @@ public class WebAuthnAuthenticator {
         );
     }
 
-    public CredentialRegistrationResultDto finishRegistration(String requestId, String publicKeyCredentialJson) throws IOException {
+    public CredentialRegistrationResult finishRegistration(String requestId, String publicKeyCredentialJson) throws IOException {
         PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
                 PublicKeyCredential.parseRegistrationResponseJson(publicKeyCredentialJson);
 
@@ -151,7 +151,7 @@ public class WebAuthnAuthenticator {
         return new SignInStartResponse(requestId, request.toCredentialsGetJson());
     }
 
-    public CredentialAssertionResultDto finishAssertion(String requestId, String publicKeyCredentialJson) throws IOException {
+    public CredentialAssertionResult finishAssertion(String requestId, String publicKeyCredentialJson) throws IOException {
         String requestJson = cache.getIfPresent(requestId);
         if (requestJson == null) {
             log.error("Request id {} not found in cache", requestId);
@@ -174,7 +174,7 @@ public class WebAuthnAuthenticator {
 
                 RegisteredCredential credential = result.getCredential();
 
-                return new CredentialAssertionResultDto(
+                return new CredentialAssertionResult(
                         result.getSignatureCount(),
                         Instant.now(),
                         credential.isBackedUp().orElse(false),

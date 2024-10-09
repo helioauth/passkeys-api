@@ -24,7 +24,7 @@ import com.helioauth.passkeys.api.domain.UserCredential;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
-import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResultDto;
+import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import com.helioauth.passkeys.api.service.exception.UsernameAlreadyRegisteredException;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +63,7 @@ public class UserSignupService {
     @Transactional
     public SignUpFinishResponse finishRegistration(String requestId, String publicKeyCredentialJson) {
         try {
-            CredentialRegistrationResultDto result = webAuthnAuthenticator.finishRegistration(requestId, publicKeyCredentialJson);
+            CredentialRegistrationResult result = webAuthnAuthenticator.finishRegistration(requestId, publicKeyCredentialJson);
 
             User user = User.builder()
                     .name(result.name())

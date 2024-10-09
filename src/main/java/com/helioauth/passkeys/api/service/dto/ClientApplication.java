@@ -22,7 +22,7 @@ import java.util.UUID;
 /**
  * @author Viktor Stanchev
  */
-public record ClientApplicationDTO(
+public record ClientApplication(
     UUID id,
     String name,
     Instant createdAt,

@@ -16,11 +16,10 @@
 
 package com.helioauth.passkeys.api.mapper;
 
-import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
-import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKeyDTO;
-import com.helioauth.passkeys.api.service.dto.ClientApplicationDTO;
+import com.helioauth.passkeys.api.service.dto.ClientApplication;
+import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKey;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
@@ -31,13 +30,13 @@ import java.util.List;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ClientApplicationMapper {
-    ClientApplicationDTO toDto(ClientApplication clientApplication);
-    List<ClientApplicationDTO> toDto(List<ClientApplication> clientApplication);
+    ClientApplication toDto(com.helioauth.passkeys.api.domain.ClientApplication clientApplication);
+    List<ClientApplication> toDto(List<com.helioauth.passkeys.api.domain.ClientApplication> clientApplication);
 
-    ClientApplicationApiKeyDTO toApiKeyDto(ClientApplication clientApplication);
+    ClientApplicationApiKey toApiKeyDto(com.helioauth.passkeys.api.domain.ClientApplication clientApplication);
 
-    Application toApplicationResponse(ClientApplicationDTO clientApplicationDTO);
-    List<Application> toApplicationResponse(List<ClientApplicationDTO> clientApplicationDTO);
+    Application toApplicationResponse(ClientApplication clientApplication);
+    List<Application> toApplicationResponse(List<ClientApplication> clientApplication);
 
-    ApplicationApiKey toApplicationApiKeyResponse(ClientApplicationApiKeyDTO clientApplicationApiKeyDTO);
+    ApplicationApiKey toApplicationApiKeyResponse(ClientApplicationApiKey clientApplicationApiKey);
 }

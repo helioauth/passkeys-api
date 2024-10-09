@@ -19,7 +19,17 @@ package com.helioauth.passkeys.api.service.dto;
 /**
  * @author Viktor Stanchev
  */
-public record ClientApplicationApiKeyDTO(
-    String apiKey
+public record CredentialRegistrationResult(
+        String name,
+        String displayName,
+        String credentialId,
+        String userHandle,
+        Long signatureCount,
+        String publicKeyCose,
+        String attestationObject,
+        String clientDataJson,
+        Boolean backupEligible,
+        Boolean backupState,
+        Boolean isDiscoverable
 ) {
 }

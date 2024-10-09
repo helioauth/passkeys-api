@@ -22,7 +22,7 @@ import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import com.helioauth.passkeys.api.service.ClientApplicationService;
-import com.helioauth.passkeys.api.service.dto.ClientApplicationDTO;
+import com.helioauth.passkeys.api.service.dto.ClientApplication;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -78,7 +78,7 @@ public class ClientApplicationController implements ApplicationsApi {
     @PostMapping
     @Override
     public ResponseEntity<Application> add(@RequestBody AddApplicationRequest request) {
-        ClientApplicationDTO created = clientApplicationService.add(request.getName());
+        ClientApplication created = clientApplicationService.add(request.getName());
 
         return ResponseEntity.created(URI.create("/admin/v1/apps/" + created.id()))
             .body(clientApplicationMapper.toApplicationResponse(created));

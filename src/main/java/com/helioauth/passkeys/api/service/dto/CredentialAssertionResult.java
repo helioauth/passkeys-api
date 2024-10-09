@@ -22,7 +22,7 @@ import java.time.Instant;
 /**
  * @author Viktor Stanchev
  */
-public record CredentialAssertionResultDto(
+public record CredentialAssertionResult(
         long signatureCount,
         Instant lastUsedAt,
         boolean isBackedUp,

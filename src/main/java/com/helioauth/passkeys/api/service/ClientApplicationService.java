@@ -16,11 +16,10 @@
 
 package com.helioauth.passkeys.api.service;
 
-import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
-import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKeyDTO;
-import com.helioauth.passkeys.api.service.dto.ClientApplicationDTO;
+import com.helioauth.passkeys.api.service.dto.ClientApplication;
+import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,30 +42,30 @@ public class ClientApplicationService {
 
     private final SecureRandom random = new SecureRandom();
 
-    public Optional<ClientApplicationDTO> get(UUID id) {
+    public Optional<ClientApplication> get(UUID id) {
         return repository.findById(id).map(mapper::toDto);
     }
 
-    public Optional<ClientApplicationApiKeyDTO> getApiKey(UUID id) {
+    public Optional<ClientApplicationApiKey> getApiKey(UUID id) {
         return repository.findById(id).map(mapper::toApiKeyDto);
     }
 
-    public List<ClientApplicationDTO> listAll() {
+    public List<ClientApplication> listAll() {
         return mapper.toDto(
             repository.findAll()
         );
     }
 
-    public ClientApplicationDTO add(String name) {
+    public ClientApplication add(String name) {
         return mapper.toDto(
             repository.save(
-                new ClientApplication(name, generateApiKey())
+                new com.helioauth.passkeys.api.domain.ClientApplication(name, generateApiKey())
             )
         );
     }
 
     @Transactional
-    public Optional<ClientApplicationDTO> edit(UUID id, String name) {
+    public Optional<ClientApplication> edit(UUID id, String name) {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setName(name);

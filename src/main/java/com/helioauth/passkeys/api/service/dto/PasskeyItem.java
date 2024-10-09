@@ -16,20 +16,17 @@
 
 package com.helioauth.passkeys.api.service.dto;
 
+import java.time.Instant;
+
 /**
  * @author Viktor Stanchev
  */
-public record CredentialRegistrationResultDto(
-        String name,
-        String displayName,
-        String credentialId,
-        String userHandle,
-        Long signatureCount,
-        String publicKeyCose,
-        String attestationObject,
-        String clientDataJson,
-        Boolean backupEligible,
-        Boolean backupState,
-        Boolean isDiscoverable
+public record PasskeyItem(
+    String credentialId,
+    String userHandle,
+    Long signatureCount,
+    String displayName,
+    Instant createdAt,
+    Instant lastUsedAt
 ) {
 }
