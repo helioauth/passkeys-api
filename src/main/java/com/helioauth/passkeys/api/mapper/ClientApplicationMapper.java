@@ -17,6 +17,8 @@
 package com.helioauth.passkeys.api.mapper;
 
 import com.helioauth.passkeys.api.domain.ClientApplication;
+import com.helioauth.passkeys.api.generated.models.Application;
+import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
 import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKeyDTO;
 import com.helioauth.passkeys.api.service.dto.ClientApplicationDTO;
 import org.mapstruct.Mapper;
@@ -34,5 +36,8 @@ public interface ClientApplicationMapper {
 
     ClientApplicationApiKeyDTO toApiKeyDto(ClientApplication clientApplication);
 
-    ClientApplication fromDto(ClientApplicationDTO clientApplicationDTO);
+    Application toApplicationResponse(ClientApplicationDTO clientApplicationDTO);
+    List<Application> toApplicationResponse(List<ClientApplicationDTO> clientApplicationDTO);
+
+    ApplicationApiKey toApplicationApiKeyResponse(ClientApplicationApiKeyDTO clientApplicationApiKeyDTO);
 }
