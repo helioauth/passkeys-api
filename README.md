@@ -25,7 +25,7 @@
 <h3 align="center">HelioAuth Passkeys API</h3>
 
   <p align="center">
-    A passwordless authentication solution for modern and traditional web applications 
+    Passwordless authentication for the modern web
     <br />
     <a href="https://github.com/helioauth/passkeys-api"><strong>Explore the docs »</strong></a>
     <br />
