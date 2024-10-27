@@ -32,6 +32,7 @@ import java.util.List;
 public interface UserCredentialMapper {
     List<PasskeyItem> toDto(List<UserCredential> userCredentialList);
 
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "lastUsedAt", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "id", ignore = true)

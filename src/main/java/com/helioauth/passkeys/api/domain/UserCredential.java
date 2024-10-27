@@ -21,15 +21,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.time.Instant;
 
 /**
@@ -37,6 +42,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "user_credentials")
+@EntityListeners(AuditingEntityListener.class)
 @Builder
 @Getter
 @Setter
@@ -76,6 +82,11 @@ public class UserCredential {
 
     @Column
     private Boolean isDiscoverable;
+
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
     @Column
     private Instant lastUsedAt;
