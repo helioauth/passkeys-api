@@ -61,6 +61,6 @@ public class User {
     private List<UserCredential> userCredentials;
 
     @ManyToOne(targetEntity = ClientApplication.class, fetch = jakarta.persistence.FetchType.LAZY)
-    @JoinColumn(name = "application_id", nullable = false)
+    @JoinColumn(name = "application_id", nullable = true)
     private ClientApplication clientApplication;
 }
