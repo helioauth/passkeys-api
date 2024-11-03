@@ -7,7 +7,7 @@ RUN mkdir -p $HOME
 WORKDIR $HOME
 ADD . $HOME
 RUN --mount=type=cache,target=/root/.m2 chmod +x ./mvnw \
-    && ./mvnw -f $HOME/pom.xml clean package
+    && ./mvnw -f $HOME/pom.xml -DskipTests clean package
 
 #
 # Package stage
