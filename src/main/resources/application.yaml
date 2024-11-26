@@ -4,6 +4,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  datasource:
+    hikari:
+      maximum-pool-size: 5
 
 relying-party:
   display-name: HelioAuth Passkeys API
