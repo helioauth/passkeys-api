@@ -186,7 +186,7 @@
 						</goals>
 						<configuration>
 							<skipIfSpecIsUnchanged>true</skipIfSpecIsUnchanged>
-							<inputSpec>${project.basedir}/src/main/resources/api.yaml</inputSpec>
+							<inputSpec>${project.basedir}/docs/openapi/openapi.yaml</inputSpec>
 							<output>${project.build.directory}/generated-sources/openapi</output>
 							<generatorName>spring</generatorName>
 							<skipValidateSpec>true</skipValidateSpec>
