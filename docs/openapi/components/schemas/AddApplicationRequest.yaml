@@ -1,0 +1,6 @@
+type: object
+description: Request to add a new client application. Contains the name of the application.
+properties:
+  name:
+    type: string
+    description: Name of the new application.

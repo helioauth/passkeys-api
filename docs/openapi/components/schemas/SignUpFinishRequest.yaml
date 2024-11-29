@@ -1,0 +1,13 @@
+type: object
+description: >-
+  Request to finish the sign-up process. Contains the request ID and public key
+  credential for attestation.
+properties:
+  requestId:
+    type: string
+    description: Unique identifier for the sign-up request (from `SignUpStartResponse`)
+  publicKeyCredential:
+    type: string
+    description: >-
+      The public key credential for attestation as returned by
+      `navigator.credentials.create()`

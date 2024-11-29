@@ -1,0 +1,21 @@
+post:
+  tags:
+    - Sign-up
+  summary: Complete sign-up process
+  description: >-
+    Completes the sign-up process by validating the attestation and registering
+    the new credential.
+  operationId: postSignupFinish
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/SignUpFinishRequest.yaml
+    required: true
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/SignUpFinishResponse.yaml

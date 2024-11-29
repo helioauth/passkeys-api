@@ -1,0 +1,19 @@
+post:
+  tags:
+    - Sign-up
+  summary: Initiate sign-up process
+  description: Starts the sign-up process by generating an attestation challenge.
+  operationId: postSignupStart
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/SignUpStartRequest.yaml
+    required: true
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/SignUpStartResponse.yaml

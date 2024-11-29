@@ -1,0 +1,6 @@
+type: object
+description: Request to start the sign-in process. Contains the name.
+properties:
+  name:
+    type: string
+    description: Name of the user attempting to sign in.

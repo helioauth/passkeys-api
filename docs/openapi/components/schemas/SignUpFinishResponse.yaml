@@ -1,0 +1,12 @@
+type: object
+description: >-
+  Response to sign-up finish request. Contains the request ID and user ID of the
+  new entity.
+properties:
+  requestId:
+    type: string
+    description: Unique identifier for the sign-up request.
+  userId:
+    type: string
+    format: uuid
+    description: Unique identifier for the newly registered user.

@@ -1,0 +1,10 @@
+required:
+  - name
+type: object
+description: >-
+  Request to start the sign-up process. Contains the name of the entity to be
+  registered.
+properties:
+  name:
+    type: string
+    description: Name of the user to be registered.

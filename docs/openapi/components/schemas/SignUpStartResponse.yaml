@@ -1,0 +1,11 @@
+type: object
+description: >-
+  Response to sign-up start request. Contains the request ID and options for
+  attestation.
+properties:
+  requestId:
+    type: string
+    description: Unique identifier for the sign-up request.
+  options:
+    type: string
+    description: Options to pass to `navigator.credentials.create()`

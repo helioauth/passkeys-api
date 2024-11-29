@@ -1,0 +1,8 @@
+type: object
+description: Response to list passkeys. Contains an array of user credentials.
+properties:
+  passkeys:
+    type: array
+    description: A list of user credentials.
+    items:
+      $ref: ./PasskeyCredential.yaml

@@ -1,0 +1,17 @@
+{
+  "name": "helioauth-passkeys-api-docs",
+  "author": {
+    "name": "Viktor Stanchev"
+  },
+  "version": "1.0.0",
+  "dependencies": {
+    "@redocly/cli": "1.25.7"
+  },
+  "private": true,
+  "scripts": {
+    "start": "redocly preview-docs",
+    "build": "redocly build-docs -o assets/index.html",
+    "bundle": "redocly bundle -o assets/bundle.yaml",
+    "test": "redocly lint"
+  }
+}

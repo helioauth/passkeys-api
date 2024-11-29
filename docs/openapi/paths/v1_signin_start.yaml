@@ -1,0 +1,17 @@
+post:
+  tags:
+    - Sign-in
+  operationId: postSignInCredential
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/SignInStartRequest.yaml
+    required: true
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/SignInStartResponse.yaml

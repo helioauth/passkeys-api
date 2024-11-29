@@ -1,0 +1,6 @@
+type: object
+description: Data Transfer Object for an API key of a client application.
+properties:
+  apiKey:
+    type: string
+    description: API key for the client application.

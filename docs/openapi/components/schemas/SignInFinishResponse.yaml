@@ -1,0 +1,9 @@
+type: object
+description: Response to sign-in finish request. Contains the request ID and username.
+properties:
+  requestId:
+    type: string
+    description: Unique identifier for the sign-in request.
+  username:
+    type: string
+    description: Username of the entity that signed in.

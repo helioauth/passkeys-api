@@ -1,0 +1,18 @@
+type: object
+description: Represents an application with its attributes.
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the application.
+  name:
+    type: string
+    description: Name of the application.
+  createdAt:
+    type: string
+    format: date-time
+    description: Timestamp when the application was created.
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the application was last updated.

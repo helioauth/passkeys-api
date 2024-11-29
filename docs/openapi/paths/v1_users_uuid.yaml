@@ -1,0 +1,16 @@
+delete:
+  tags:
+    - Users
+  summary: Delete user
+  description: Deletes a specific user by their UUID.
+  operationId: deleteUser
+  parameters:
+    - name: uuid
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    '200':
+      description: OK

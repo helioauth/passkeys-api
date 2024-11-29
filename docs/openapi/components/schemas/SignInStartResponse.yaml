@@ -1,0 +1,11 @@
+type: object
+description: >-
+  Response to sign-in start request. Contains the request ID and options for
+  assertion.
+properties:
+  requestId:
+    type: string
+    description: Unique identifier for the sign-in request.
+  options:
+    type: string
+    description: Options for assertion to pass to `navigator.credentials.create()`

@@ -1,0 +1,46 @@
+get:
+  tags:
+    - Applications
+  summary: List all applications
+  description: Retrieves a list of all applications.
+  operationId: listAll
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/Application.yaml
+    '401':
+      description: Unauthorized
+    '404':
+      description: Not Found
+  security:
+    - admin-api: []
+post:
+  tags:
+    - Applications
+  summary: Add a new application
+  description: Creates a new application and returns its details.
+  operationId: add
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/AddApplicationRequest.yaml
+    required: true
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Application.yaml
+    '401':
+      description: Unauthorized
+    '404':
+      description: Not Found
+  security:
+    - admin-api: []

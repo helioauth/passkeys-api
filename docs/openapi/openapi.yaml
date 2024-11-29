@@ -1,0 +1,79 @@
+openapi: 3.0.1
+info:
+  title: HelioAuth Passkeys API
+  version: v1
+#  termsOfService: https://example.com/terms/
+  contact:
+    name: Contact our support
+    email: dev@helioauth.com
+    url: https://helioauth.com/
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  x-logo:
+    url: '/favicons/apple-touch-icon.png'
+    altText: HelioAuth logo
+  description: >
+    # Introduction
+
+    This is the official documentation of [HelioAuth](https://helioauth.com/) Passkeys API. It provides a simple interface for user authentication
+    with [WebAuthn passkeys](https://passkeys.dev/docs/intro/what-are-passkeys/).
+
+    # Getting started
+    
+    Start by creating an application at [/admin/v1/apps](#tag/Applications/operation/add). Then, get its API key from
+    [/admin/v1/apps/{id}/api-key](#tag/Applications/operation/getApiKey).
+
+externalDocs:
+  description: "Contribute to these docs in GitHub"
+  url: 'https://github.com/helioauth/passkeys-api'
+servers:
+  - url: https://api.helioauth.com/
+    description: Production
+tags:
+  - name: Applications
+    description: CRUD operations for client applications.
+  - name: Sign-up
+    description: Passkey sign-up from browser
+  - name: Sign-in
+    description: Passkey sign-in from browser
+  - name: Users
+    description: User account management
+x-tagGroups:
+  - name: General
+    tags:
+      - Sign-up
+      - Sign-in
+      - Users
+  - name: Administration
+    tags:
+      - Applications
+paths:
+  /admin/v1/apps:
+    $ref: paths/admin_v1_apps.yaml
+  /admin/v1/apps/{id}:
+    $ref: paths/admin_v1_apps_id.yaml
+  /admin/v1/apps/{id}/api-key:
+    $ref: paths/admin_v1_apps_id_api-key.yaml
+  /v1/signup/start:
+    $ref: paths/v1_signup_start.yaml
+  /v1/signup/finish:
+    $ref: paths/v1_signup_finish.yaml
+  /v1/signin/start:
+    $ref: paths/v1_signin_start.yaml
+  /v1/signin/finish:
+    $ref: paths/v1_signin_finish.yaml
+  /v1/credentials/add/start:
+    $ref: paths/v1_credentials_add_start.yaml
+  /v1/credentials/add/finish:
+    $ref: paths/v1_credentials_add_finish.yaml
+  /v1/users/{uuid}/credentials:
+    $ref: paths/v1_users_uuid_credentials.yaml
+  /v1/users/{uuid}:
+    $ref: paths/v1_users_uuid.yaml
+components:
+  securitySchemes:
+    admin-api:
+      type: apiKey
+      name: X-Api-Key
+      in: header
