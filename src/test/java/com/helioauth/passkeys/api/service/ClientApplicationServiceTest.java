@@ -1,9 +1,10 @@
 package com.helioauth.passkeys.api.service;
 
+import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
+import com.helioauth.passkeys.api.generated.models.Application;
+import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
-import com.helioauth.passkeys.api.service.dto.ClientApplication;
-import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKey;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -29,18 +30,17 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ClientApplicationServiceTest {
 
-    public static final ClientApplication DTO = new ClientApplication(
-        UUID.randomUUID(),
-        "App Name",
-        Instant.now(),
-        Instant.now()
-    );
+    public static final Application DTO = new Application()
+        .id(UUID.randomUUID())
+        .name("App Name")
+        .createdAt(Instant.now())
+        .updatedAt(Instant.now());
 
-    public static final com.helioauth.passkeys.api.domain.ClientApplication CLIENT_APPLICATION = com.helioauth.passkeys.api.domain.ClientApplication.builder()
-        .id(DTO.id())
-        .name(DTO.name())
-        .createdAt(DTO.createdAt())
-        .updatedAt(DTO.updatedAt())
+    public static final ClientApplication CLIENT_APPLICATION = ClientApplication.builder()
+        .id(DTO.getId())
+        .name(DTO.getName())
+        .createdAt(DTO.getCreatedAt())
+        .updatedAt(DTO.getUpdatedAt())
         .build();
 
     @Mock
@@ -55,36 +55,36 @@ public class ClientApplicationServiceTest {
     @Test
     public void addClientApplicationTest() {
         // Setup
-        ArgumentCaptor<com.helioauth.passkeys.api.domain.ClientApplication> argumentCaptor = ArgumentCaptor.forClass(com.helioauth.passkeys.api.domain.ClientApplication.class);
-        when(repository.save(any(com.helioauth.passkeys.api.domain.ClientApplication.class))).thenReturn(CLIENT_APPLICATION);
+        ArgumentCaptor<ClientApplication> argumentCaptor = ArgumentCaptor.forClass(ClientApplication.class);
+        when(repository.save(any(ClientApplication.class))).thenReturn(CLIENT_APPLICATION);
 
         // Execute
-        ClientApplication result = service.add(DTO.name());
+        Application result = service.add(DTO.getName());
 
         // Capture the argument
         verify(repository).save(argumentCaptor.capture());
-        com.helioauth.passkeys.api.domain.ClientApplication savedClientApplication = argumentCaptor.getValue();
+        ClientApplication savedClientApplication = argumentCaptor.getValue();
 
         // Validate
         assertFalse(savedClientApplication.getApiKey().isEmpty());
-        assertEquals(DTO.name(), savedClientApplication.getName());
-        assertEquals(DTO.name(), result.name());
+        assertEquals(DTO.getName(), savedClientApplication.getName());
+        assertEquals(DTO.getName(), result.getName());
     }
 
     @Test
     public void listAllClientApplicationsTest() {
         // Setup
-        List<com.helioauth.passkeys.api.domain.ClientApplication> applications = List.of(CLIENT_APPLICATION);
+        List<ClientApplication> applications = List.of(CLIENT_APPLICATION);
         when(repository.findAll()).thenReturn(applications);
 
         // Execute
-        List<ClientApplication> result = service.listAll();
+        List<Application> result = service.listAll();
 
         // Validate
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(DTO.id(), result.getFirst().id());
-        assertEquals(DTO.name(), result.getFirst().name());
+        assertEquals(DTO.getId(), result.get(0).getId());
+        assertEquals(DTO.getName(), result.get(0).getName());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ClientApplicationServiceTest {
         // Setup
         UUID id = UUID.randomUUID();
         String newName = "Updated Name";
-        com.helioauth.passkeys.api.domain.ClientApplication existingClientApplication = com.helioauth.passkeys.api.domain.ClientApplication.builder()
+        ClientApplication existingClientApplication = ClientApplication.builder()
             .id(id)
             .name("Old Name")
             .createdAt(Instant.now())
@@ -100,14 +100,14 @@ public class ClientApplicationServiceTest {
             .build();
 
         when(repository.findById(id)).thenReturn(Optional.of(existingClientApplication));
-        when(repository.save(any(com.helioauth.passkeys.api.domain.ClientApplication.class))).thenReturn(existingClientApplication);
+        when(repository.save(any(ClientApplication.class))).thenReturn(existingClientApplication);
 
         // Execute
-        Optional<ClientApplication> result = service.edit(id, newName);
+        Optional<Application> result = service.edit(id, newName);
 
         // Validate
         assertTrue(result.isPresent());
-        assertEquals(newName, result.get().name());
+        assertEquals(newName, result.get().getName());
     }
 
     @Test
@@ -129,16 +129,16 @@ public class ClientApplicationServiceTest {
     @Test
     public void getClientApplicationTest() {
         // Setup
-        UUID id = DTO.id();
+        UUID id = DTO.getId();
         when(repository.findById(id)).thenReturn(Optional.of(CLIENT_APPLICATION));
 
         // Execute
-        Optional<ClientApplication> result = service.get(id);
+        Optional<Application> result = service.get(id);
 
         // Validate
         assertTrue(result.isPresent());
-        assertEquals(DTO.id(), result.get().id());
-        assertEquals(DTO.name(), result.get().name());
+        assertEquals(DTO.getId(), result.get().getId());
+        assertEquals(DTO.getName(), result.get().getName());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class ClientApplicationServiceTest {
         // Setup
         UUID id = UUID.randomUUID();
         String apiKey = "sampleApiKey";
-        com.helioauth.passkeys.api.domain.ClientApplication clientApplicationWithApiKey = com.helioauth.passkeys.api.domain.ClientApplication.builder()
+        ClientApplication clientApplicationWithApiKey = ClientApplication.builder()
             .id(id)
             .name("App Name")
             .apiKey(apiKey)
@@ -157,10 +157,10 @@ public class ClientApplicationServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(clientApplicationWithApiKey));
 
         // Execute
-        Optional<ClientApplicationApiKey> result = service.getApiKey(id);
+        Optional<ApplicationApiKey> result = service.getApiKey(id);
 
         // Validate
         assertTrue(result.isPresent());
-        assertEquals(apiKey, result.get().apiKey());
+        assertEquals(apiKey, result.get().getApiKey());
     }
 }
