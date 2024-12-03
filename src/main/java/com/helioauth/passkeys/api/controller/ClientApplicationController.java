@@ -22,7 +22,6 @@ import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import com.helioauth.passkeys.api.service.ClientApplicationService;
-import com.helioauth.passkeys.api.service.dto.ClientApplication;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -54,16 +53,14 @@ public class ClientApplicationController implements ApplicationsApi {
     @GetMapping
     @Override
     public ResponseEntity<List<Application>> listAll() {
-        return ResponseEntity.ok(clientApplicationMapper.toApplicationResponse(
-            clientApplicationService.listAll()
-        ));
+        return ResponseEntity.ok(clientApplicationService.listAll());
     }
 
     @GetMapping("/{id}")
     @Override
     public ResponseEntity<Application> get(@PathVariable UUID id) {
         return clientApplicationService.get(id)
-                .map(dto -> ResponseEntity.ok(clientApplicationMapper.toApplicationResponse(dto)))
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -71,26 +68,27 @@ public class ClientApplicationController implements ApplicationsApi {
     @Override
     public ResponseEntity<ApplicationApiKey> getApiKey(@PathVariable UUID id) {
         return clientApplicationService.getApiKey(id)
-                .map(dto -> ResponseEntity.ok(clientApplicationMapper.toApplicationApiKeyResponse(dto)))
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @Override
     public ResponseEntity<Application> add(@RequestBody AddApplicationRequest request) {
-        ClientApplication created = clientApplicationService.add(request.getName());
+        Application created = clientApplicationService.add(request.getName());
 
-        return ResponseEntity.created(URI.create("/admin/v1/apps/" + created.id()))
-            .body(clientApplicationMapper.toApplicationResponse(created));
+        return ResponseEntity.created(URI.create("/admin/v1/apps/" + created.getId()))
+            .body(created);
     }
 
     @PutMapping("/{id}")
     @Override
     public ResponseEntity<Application> edit(@PathVariable UUID id, @RequestBody String name) {
+
         val updated = clientApplicationService.edit(id, name);
 
         return updated
-            .map(clientApplicationDTO -> ResponseEntity.ok(clientApplicationMapper.toApplicationResponse(clientApplicationDTO)))
+            .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

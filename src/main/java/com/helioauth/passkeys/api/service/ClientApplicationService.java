@@ -16,10 +16,11 @@
 
 package com.helioauth.passkeys.api.service;
 
+import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
+import com.helioauth.passkeys.api.generated.models.Application;
+import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
-import com.helioauth.passkeys.api.service.dto.ClientApplication;
-import com.helioauth.passkeys.api.service.dto.ClientApplicationApiKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,34 +43,37 @@ public class ClientApplicationService {
 
     private final SecureRandom random = new SecureRandom();
 
-    public Optional<ClientApplication> get(UUID id) {
-        return repository.findById(id).map(mapper::toDto);
+    public Optional<Application> get(UUID id) {
+
+        return repository.findById(id).map(mapper::toResponse);
     }
 
-    public Optional<ClientApplicationApiKey> getApiKey(UUID id) {
-        return repository.findById(id).map(mapper::toApiKeyDto);
+    public Optional<ApplicationApiKey> getApiKey(UUID id) {
+        return repository.findById(id).map(mapper::toApiKeyResponse);
     }
 
-    public List<ClientApplication> listAll() {
-        return mapper.toDto(
+    public List<Application> listAll() {
+
+        return mapper.toResponse(
             repository.findAll()
         );
     }
 
-    public ClientApplication add(String name) {
-        return mapper.toDto(
+    public Application add(String name) {
+
+        return mapper.toResponse(
             repository.save(
-                new com.helioauth.passkeys.api.domain.ClientApplication(name, generateApiKey())
+                new ClientApplication(name, generateApiKey())
             )
         );
     }
 
     @Transactional
-    public Optional<ClientApplication> edit(UUID id, String name) {
+    public Optional<Application> edit(UUID id, String name) {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setName(name);
-                    return mapper.toDto(repository.save(existing));
+                    return mapper.toResponse(repository.save(existing));
                 });
     }
 
