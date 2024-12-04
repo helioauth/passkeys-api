@@ -20,7 +20,6 @@ import com.helioauth.passkeys.api.generated.api.ApplicationsApi;
 import com.helioauth.passkeys.api.generated.models.AddApplicationRequest;
 import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
-import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import com.helioauth.passkeys.api.service.ClientApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -47,8 +46,6 @@ import java.util.UUID;
 public class ClientApplicationController implements ApplicationsApi {
 
     private final ClientApplicationService clientApplicationService;
-
-    private final ClientApplicationMapper clientApplicationMapper;
 
     @GetMapping
     @Override
