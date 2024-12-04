@@ -16,11 +16,13 @@
 
 package com.helioauth.passkeys.api.controller;
 
+import com.helioauth.passkeys.api.generated.api.UsersApi;
+import com.helioauth.passkeys.api.generated.models.ListPasskeysResponse;
 import com.helioauth.passkeys.api.service.UserAccountManager;
 import com.helioauth.passkeys.api.service.UserCredentialManager;
-import com.helioauth.passkeys.api.service.dto.ListPasskeysResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,17 +38,18 @@ import java.util.UUID;
 @RequestMapping("/v1/users")
 @Slf4j
 @RequiredArgsConstructor
-public class UsersController {
+public class UsersController implements UsersApi {
     private final UserCredentialManager userCredentialManager;
     private final UserAccountManager userAccountManager;
 
     @GetMapping("/{uuid}/credentials")
-    public ListPasskeysResponse getUserCredentials(@PathVariable UUID uuid) {
-        return userCredentialManager.getUserCredentials(uuid);
+    public ResponseEntity<ListPasskeysResponse> getUserCredentials(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(userCredentialManager.getUserCredentials(uuid));
     }
 
     @DeleteMapping("/{uuid}")
-    public void deleteUser(@PathVariable UUID uuid) {
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID uuid) {
         userAccountManager.deleteUser(uuid);
+        return ResponseEntity.noContent().build();
     }
 }

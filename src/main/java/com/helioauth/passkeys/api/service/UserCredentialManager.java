@@ -24,10 +24,9 @@ import com.helioauth.passkeys.api.domain.User;
 import com.helioauth.passkeys.api.domain.UserCredential;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
+import com.helioauth.passkeys.api.generated.models.ListPasskeysResponse;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
-import com.helioauth.passkeys.api.service.dto.ListPasskeysResponse;
-import com.helioauth.passkeys.api.service.dto.PasskeyItem;
 import com.helioauth.passkeys.api.service.exception.CreateCredentialFailedException;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import lombok.RequiredArgsConstructor;
@@ -81,8 +80,7 @@ public class UserCredentialManager {
 
     public ListPasskeysResponse getUserCredentials(UUID userUuid) {
         List<UserCredential> userCredentials = userCredentialRepository.findAllByUserId(userUuid);
-        List<PasskeyItem> passkeyItems = userCredentialMapper.toDto(userCredentials);
-        return new ListPasskeysResponse(passkeyItems);
+        return new ListPasskeysResponse(userCredentialMapper.toDto(userCredentials));
     }
     
 }
