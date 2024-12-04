@@ -17,17 +17,27 @@
 package com.helioauth.passkeys.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.*;
+import com.helioauth.passkeys.api.contract.SignInFinishRequest;
+import com.helioauth.passkeys.api.contract.SignInFinishResponse;
+import com.helioauth.passkeys.api.contract.SignInStartRequest;
+import com.helioauth.passkeys.api.contract.SignInStartResponse;
+import com.helioauth.passkeys.api.contract.SignUpFinishRequest;
+import com.helioauth.passkeys.api.contract.SignUpFinishResponse;
+import com.helioauth.passkeys.api.contract.SignUpStartRequest;
+import com.helioauth.passkeys.api.contract.SignUpStartResponse;
 import com.helioauth.passkeys.api.service.UserCredentialManager;
 import com.helioauth.passkeys.api.service.UserSignInService;
 import com.helioauth.passkeys.api.service.UserSignupService;
-
 import com.helioauth.passkeys.api.service.exception.SignInFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
@@ -75,15 +85,5 @@ public class CredentialsController {
             log.error("Sign in failed", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sign in failed");
         }
-    }
-
-    @PostMapping(value = "/credentials/add/start", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignUpStartResponse credentialsAddStart(@RequestBody String username) {
-        return userCredentialManager.createCredential(username);
-    }
-
-    @PostMapping(value = "/credentials/add/finish", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignUpFinishResponse credentialsAddFinish(@RequestBody SignUpFinishRequest request) {
-        return userCredentialManager.finishCreateCredential(request);
     }
 }
