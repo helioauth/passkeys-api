@@ -20,19 +20,15 @@ import com.helioauth.passkeys.api.generated.api.UsersApi;
 import com.helioauth.passkeys.api.generated.models.ListPasskeysResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishRequest;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpStartRequest;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.service.UserAccountManager;
 import com.helioauth.passkeys.api.service.UserCredentialManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -40,31 +36,26 @@ import java.util.UUID;
 /**
  * @author Viktor Stanchev
  */
-@RestController
-@RequestMapping("/v1/users")
 @Slf4j
+@RestController
 @RequiredArgsConstructor
 public class UsersController implements UsersApi {
     private final UserCredentialManager userCredentialManager;
     private final UserAccountManager userAccountManager;
 
-    @GetMapping("/{uuid}/credentials")
     public ResponseEntity<ListPasskeysResponse> getUserCredentials(@PathVariable UUID uuid) {
         return ResponseEntity.ok(userCredentialManager.getUserCredentials(uuid));
     }
 
-    @DeleteMapping("/{uuid}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID uuid) {
         userAccountManager.deleteUser(uuid);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/credentials/add/start", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignUpStartResponse> credentialsAddStart(@RequestBody String username) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    @PostMapping(value = "/credentials/add/finish", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignUpFinishResponse> credentialsAddFinish(@RequestBody SignUpFinishRequest request) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
