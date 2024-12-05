@@ -27,6 +27,7 @@ import com.helioauth.passkeys.api.service.UserCredentialManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,10 +53,12 @@ public class UsersController implements UsersApi {
         return ResponseEntity.noContent().build();
     }
 
+    @CrossOrigin(origins = "*")
     public ResponseEntity<SignUpStartResponse> credentialsAddStart(@RequestBody SignUpStartRequest request) {
         return ResponseEntity.ok(userCredentialManager.createCredential(request.getName()));
     }
 
+    @CrossOrigin(origins = "*")
     public ResponseEntity<SignUpFinishResponse> credentialsAddFinish(@RequestBody SignUpFinishRequest request) {
         return ResponseEntity.ok(userCredentialManager.finishCreateCredential(request));
     }

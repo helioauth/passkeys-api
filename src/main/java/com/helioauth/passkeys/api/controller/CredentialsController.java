@@ -25,7 +25,6 @@ import com.helioauth.passkeys.api.contract.SignUpFinishRequest;
 import com.helioauth.passkeys.api.contract.SignUpFinishResponse;
 import com.helioauth.passkeys.api.contract.SignUpStartRequest;
 import com.helioauth.passkeys.api.contract.SignUpStartResponse;
-import com.helioauth.passkeys.api.service.UserCredentialManager;
 import com.helioauth.passkeys.api.service.UserSignInService;
 import com.helioauth.passkeys.api.service.UserSignupService;
 import com.helioauth.passkeys.api.service.exception.SignInFailedException;
@@ -45,16 +44,15 @@ import jakarta.validation.Valid;
 /**
  * @author Viktor Stanchev
  */
+@Slf4j
 @RestController
 @RequestMapping("/v1")
 @CrossOrigin(origins = "*")
-@Slf4j
 @RequiredArgsConstructor
 public class CredentialsController {
 
     private final UserSignInService userSignInService;
     private final UserSignupService userSignupService;
-    private final UserCredentialManager userCredentialManager;
 
     @PostMapping(value = "/signup/start", produces = MediaType.APPLICATION_JSON_VALUE)
     public SignUpStartResponse postSignupStart(@RequestBody @Valid SignUpStartRequest request) {
