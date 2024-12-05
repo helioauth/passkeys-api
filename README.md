@@ -27,7 +27,7 @@
   <p align="center">
     Passwordless authentication for the modern web
     <br />
-    <a href="https://github.com/helioauth/passkeys-api"><strong>Explore the docs »</strong></a>
+    <a href="https://docs.helioauth.com/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://demo.usepasskeys.dev/">View Demo</a>
