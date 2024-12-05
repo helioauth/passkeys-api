@@ -38,4 +38,6 @@ public interface UserCredentialMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "id", ignore = true)
     UserCredential fromCredentialRegistrationResult(CredentialRegistrationResult registrationResultDto);
+
+    com.helioauth.passkeys.api.contract.SignUpStartResponse toLegacySignUpStartResponse(SignUpStartResponse response);
 }

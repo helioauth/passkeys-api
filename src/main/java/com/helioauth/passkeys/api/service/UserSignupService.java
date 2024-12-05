@@ -53,7 +53,7 @@ public class UserSignupService {
         });
 
         try {
-            return webAuthnAuthenticator.startRegistration(name);
+            return usercredentialMapper.toLegacySignUpStartResponse(webAuthnAuthenticator.startRegistration(name));
         } catch (JsonProcessingException e) {
             log.error("Register Credential failed", e);
             throw new SignUpFailedException();

@@ -52,11 +52,11 @@ public class UsersController implements UsersApi {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<SignUpStartResponse> credentialsAddStart(@RequestBody String username) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public ResponseEntity<SignUpStartResponse> credentialsAddStart(@RequestBody SignUpStartRequest request) {
+        return ResponseEntity.ok(userCredentialManager.createCredential(request.getName()));
     }
 
     public ResponseEntity<SignUpFinishResponse> credentialsAddFinish(@RequestBody SignUpFinishRequest request) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return ResponseEntity.ok(userCredentialManager.finishCreateCredential(request));
     }
 }
