@@ -199,6 +199,8 @@
 								<useSpringController>true</useSpringController>
 								<useSpringfox>false</useSpringfox>
 								<useSpringBoot3>true</useSpringBoot3>
+								<generatedConstructorWithRequiredArgs>true</generatedConstructorWithRequiredArgs>
+								<generateConstructorWithAllArgs>true</generateConstructorWithAllArgs>
 							</configOptions>
 							<modelPackage>com.helioauth.passkeys.api.generated.models</modelPackage>
 							<apiPackage>com.helioauth.passkeys.api.generated.api</apiPackage>

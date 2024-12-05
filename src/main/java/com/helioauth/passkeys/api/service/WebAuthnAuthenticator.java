@@ -21,7 +21,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import com.helioauth.passkeys.api.contract.SignInStartResponse;
-import com.helioauth.passkeys.api.contract.SignUpStartResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;

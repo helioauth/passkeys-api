@@ -9,3 +9,4 @@ properties:
   options:
     type: string
     description: Options for assertion to pass to `navigator.credentials.create()`
+    x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonRawValue'

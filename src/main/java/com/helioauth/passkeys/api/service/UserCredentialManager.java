@@ -17,17 +17,16 @@
 package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.SignUpFinishRequest;
-import com.helioauth.passkeys.api.contract.SignUpFinishResponse;
-import com.helioauth.passkeys.api.contract.SignUpStartResponse;
 import com.helioauth.passkeys.api.domain.User;
 import com.helioauth.passkeys.api.domain.UserCredential;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
+import com.helioauth.passkeys.api.generated.models.ListPasskeysResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpFinishRequest;
+import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
-import com.helioauth.passkeys.api.service.dto.ListPasskeysResponse;
-import com.helioauth.passkeys.api.service.dto.PasskeyItem;
 import com.helioauth.passkeys.api.service.exception.CreateCredentialFailedException;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import lombok.RequiredArgsConstructor;
@@ -62,8 +61,8 @@ public class UserCredentialManager {
     public SignUpFinishResponse finishCreateCredential(SignUpFinishRequest request) {
         try {
             CredentialRegistrationResult result = webAuthnAuthenticator.finishRegistration(
-                    request.requestId(),
-                    request.publicKeyCredential()
+                    request.getRequestId(),
+                    request.getPublicKeyCredential()
             );
 
             User user = userRepository.findByName(result.name()).orElseThrow(CreateCredentialFailedException::new);
@@ -72,7 +71,7 @@ public class UserCredentialManager {
             userCredential.setUser(user);
             userCredentialRepository.save(userCredential);
 
-            return new SignUpFinishResponse(request.requestId(), user.getId());
+            return new SignUpFinishResponse(request.getRequestId(), user.getId());
         } catch (IOException e) {
             log.error("Register Credential failed", e);
             throw new SignUpFailedException();
@@ -81,8 +80,7 @@ public class UserCredentialManager {
 
     public ListPasskeysResponse getUserCredentials(UUID userUuid) {
         List<UserCredential> userCredentials = userCredentialRepository.findAllByUserId(userUuid);
-        List<PasskeyItem> passkeyItems = userCredentialMapper.toDto(userCredentials);
-        return new ListPasskeysResponse(passkeyItems);
+        return new ListPasskeysResponse(userCredentialMapper.toDto(userCredentials));
     }
     
 }
