@@ -16,11 +16,19 @@
 
 package com.helioauth.passkeys.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.helioauth.passkeys.api.domain.User;
 import com.helioauth.passkeys.api.domain.UserCredential;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
 import com.helioauth.passkeys.api.generated.models.ListPasskeysResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpFinishRequest;
+import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
+import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
+import com.helioauth.passkeys.api.service.exception.CreateCredentialFailedException;
+import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -29,14 +37,17 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -98,6 +109,68 @@ class UserCredentialManagerTest {
         assertNotNull(response);
         assertFalse(response.getPasskeys().isEmpty(), "The response should not be empty when credentials exist.");
         assertEquals(1, response.getPasskeys().size());
-        assertEquals("Credential Name", response.getPasskeys().get(0).getDisplayName());
+        assertEquals("Credential Name", response.getPasskeys().getFirst().getDisplayName());
+    }
+
+
+    @Test
+    void createCredential_returnsResponse_whenSuccessful() throws JsonProcessingException {
+        // Arrange
+        String userName = "testUser";
+        SignUpStartResponse expectedResponse = new SignUpStartResponse("requestId", "{\"key\":\"value\"}");
+        when(authenticator.startRegistration(userName)).thenReturn(expectedResponse);
+
+        // Act
+        SignUpStartResponse response = userCredentialManager.createCredential(userName);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals("requestId", response.getRequestId());
+        assertEquals("{\"key\":\"value\"}", response.getOptions());
+    }
+
+    @Test
+    void createCredential_throwsException_whenJsonProcessingExceptionOccurs() throws JsonProcessingException {
+        // Arrange
+        String userName = "testUser";
+        when(authenticator.startRegistration(userName)).thenThrow(JsonProcessingException.class);
+
+        // Act & Assert
+        assertThrows(CreateCredentialFailedException.class, () -> userCredentialManager.createCredential(userName));
+    }
+
+    @Test
+    void finishCreateCredential_returnsResponse_whenSuccessful() throws IOException {
+        // Arrange
+        SignUpFinishRequest finishRequest = new SignUpFinishRequest("requestId", "publicKeyCredential");
+        User user = User.builder().id(UUID.randomUUID()).name("testUser").build();
+        CredentialRegistrationResult registrationResult = new CredentialRegistrationResult(
+            user.getName(), "credential", "test", "handle", 0L, "test",
+            "test", "test", true, true, true
+        );
+
+        when(authenticator.finishRegistration(finishRequest.getRequestId(), finishRequest.getPublicKeyCredential()))
+            .thenReturn(registrationResult);
+        when(userRepository.findByName(registrationResult.name())).thenReturn(Optional.of(user));
+
+        // Act
+        SignUpFinishResponse response = userCredentialManager.finishCreateCredential(finishRequest);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(finishRequest.getRequestId(), response.getRequestId());
+        assertEquals(user.getId(), response.getUserId());
+    }
+
+    @Test
+    void finishCreateCredential_throwsException_whenIOExceptionOccurs() throws IOException {
+        // Arrange
+        SignUpFinishRequest finishRequest = new SignUpFinishRequest("requestId", "invalidCredential");
+
+        when(authenticator.finishRegistration(finishRequest.getRequestId(), finishRequest.getPublicKeyCredential()))
+            .thenThrow(IOException.class);
+
+        // Act & Assert
+        assertThrows(SignUpFailedException.class, () -> userCredentialManager.finishCreateCredential(finishRequest));
     }
 }
