@@ -18,8 +18,6 @@ package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import com.helioauth.passkeys.api.contract.SignInStartResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
@@ -48,6 +46,7 @@ import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -60,29 +59,16 @@ import java.time.Instant;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class WebAuthnAuthenticator {
 
     private final RelyingParty relyingParty;
 
     private final CredentialRegistrationResultMapper credentialRegistrationResultMapper;
 
-    private final Cache<String, String> cache;
+    private final Cache<String, String> webAuthnRequestCache;
 
     private static final SecureRandom random = new SecureRandom();
-
-    public WebAuthnAuthenticator(
-            RelyingParty relyingParty,
-            CredentialRegistrationResultMapper credentialRegistrationResultMapper,
-            WebAuthnRelyingPartyProperties.Cache cacheConfig
-    ) {
-        this.relyingParty = relyingParty;
-        this.credentialRegistrationResultMapper = credentialRegistrationResultMapper;
-
-        this.cache = Caffeine.newBuilder()
-            .expireAfterWrite(cacheConfig.getExpiration())
-            .maximumSize(cacheConfig.getMaxSize())
-            .build();
-    }
 
     public SignUpStartResponse startRegistration(String name, ByteArray userId) throws JsonProcessingException {
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
@@ -104,7 +90,7 @@ public class WebAuthnAuthenticator {
         );
 
         String requestId = generateRandom().getHex();
-        cache.put(requestId, request.toJson());
+        webAuthnRequestCache.put(requestId, request.toJson());
 
         return new SignUpStartResponse(
             requestId,
@@ -121,11 +107,11 @@ public class WebAuthnAuthenticator {
         PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
                 PublicKeyCredential.parseRegistrationResponseJson(publicKeyCredentialJson);
 
-        String requestJson = cache.getIfPresent(requestId);
+        String requestJson = webAuthnRequestCache.getIfPresent(requestId);
         if (requestJson == null) {
             throw new CredentialRegistrationFailedException("Request not found.");
         }
-        cache.invalidate(requestId);
+        webAuthnRequestCache.invalidate(requestId);
 
         try {
             PublicKeyCredentialCreationOptions request = PublicKeyCredentialCreationOptions.fromJson(requestJson);
@@ -148,18 +134,18 @@ public class WebAuthnAuthenticator {
                 .build());
 
         String requestId = generateRandom().getHex();
-        cache.put(requestId, request.toJson());
+        webAuthnRequestCache.put(requestId, request.toJson());
 
         return new SignInStartResponse(requestId, request.toCredentialsGetJson());
     }
 
     public CredentialAssertionResult finishAssertion(String requestId, String publicKeyCredentialJson) throws IOException {
-        String requestJson = cache.getIfPresent(requestId);
+        String requestJson = webAuthnRequestCache.getIfPresent(requestId);
         if (requestJson == null) {
             log.error("Request id {} not found in cache", requestId);
             throw new CredentialAssertionFailedException();
         }
-        cache.invalidate(requestId);
+        webAuthnRequestCache.invalidate(requestId);
 
         try {
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc =
