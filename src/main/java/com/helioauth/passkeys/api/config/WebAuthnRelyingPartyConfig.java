@@ -16,6 +16,8 @@
 
 package com.helioauth.passkeys.api.config;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import com.helioauth.passkeys.api.webauthn.DatabaseCredentialRepository;
 import com.yubico.webauthn.RelyingParty;
@@ -44,5 +46,13 @@ public class WebAuthnRelyingPartyConfig {
                 .credentialRepository(databaseCredentialRepository)
                 .allowOriginPort(properties.isAllowOriginPort())
                 .build();
+    }
+
+    @Bean
+    public Cache<String, String> webAuthnRequestCache(WebAuthnRelyingPartyProperties.Cache cacheConfig) {
+        return Caffeine.newBuilder()
+            .expireAfterWrite(cacheConfig.getExpiration())
+            .maximumSize(cacheConfig.getMaxSize())
+            .build();
     }
 }
