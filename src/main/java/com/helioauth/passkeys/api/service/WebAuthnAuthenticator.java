@@ -84,10 +84,7 @@ public class WebAuthnAuthenticator {
             .build();
     }
 
-    public SignUpStartResponse startRegistration(String name) throws JsonProcessingException {
-        // TODO Allow user id (user handle) to be passed as argument so that a user can have more than one credential
-        ByteArray id = generateRandom(32);
-
+    public SignUpStartResponse startRegistration(String name, ByteArray userId) throws JsonProcessingException {
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
 
         PublicKeyCredentialCreationOptions request = relyingParty.startRegistration(StartRegistrationOptions.builder()
@@ -95,24 +92,29 @@ public class WebAuthnAuthenticator {
                 UserIdentity.builder()
                     .name(name)
                     .displayName(name)
-                    .id(id)
+                    .id(userId)
                     .build()
             )
             .authenticatorSelection(
-                    AuthenticatorSelectionCriteria.builder()
-                            .residentKey(residentKeyRequirement)
-                            .build()
+                AuthenticatorSelectionCriteria.builder()
+                    .residentKey(residentKeyRequirement)
+                    .build()
             )
             .build()
         );
 
-        String requestId = id.getHex();
+        String requestId = generateRandom().getHex();
         cache.put(requestId, request.toJson());
 
         return new SignUpStartResponse(
             requestId,
             request.toCredentialsCreateJson()
         );
+    }
+
+    public SignUpStartResponse startRegistration(String name) throws JsonProcessingException {
+        ByteArray id = generateRandom();
+        return startRegistration(name, id);
     }
 
     public CredentialRegistrationResult finishRegistration(String requestId, String publicKeyCredentialJson) throws IOException {
@@ -145,7 +147,7 @@ public class WebAuthnAuthenticator {
                 .username(name)
                 .build());
 
-        String requestId = generateRandom(32).getHex();
+        String requestId = generateRandom().getHex();
         cache.put(requestId, request.toJson());
 
         return new SignInStartResponse(requestId, request.toCredentialsGetJson());
@@ -191,8 +193,8 @@ public class WebAuthnAuthenticator {
         throw new CredentialAssertionFailedException();
     }
 
-    private static ByteArray generateRandom(int length) {
-        byte[] bytes = new byte[length];
+    private static ByteArray generateRandom() {
+        byte[] bytes = new byte[32];
         random.nextBytes(bytes);
         return new ByteArray(bytes);
     }
