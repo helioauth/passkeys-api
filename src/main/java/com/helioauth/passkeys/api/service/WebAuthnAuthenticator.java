@@ -104,14 +104,14 @@ public class WebAuthnAuthenticator {
     }
 
     public CredentialRegistrationResult finishRegistration(String requestId, String publicKeyCredentialJson) throws IOException {
-        PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
-                PublicKeyCredential.parseRegistrationResponseJson(publicKeyCredentialJson);
-
         String requestJson = webAuthnRequestCache.getIfPresent(requestId);
         if (requestJson == null) {
             throw new CredentialRegistrationFailedException("Request not found.");
         }
         webAuthnRequestCache.invalidate(requestId);
+
+        PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
+            PublicKeyCredential.parseRegistrationResponseJson(publicKeyCredentialJson);
 
         try {
             PublicKeyCredentialCreationOptions request = PublicKeyCredentialCreationOptions.fromJson(requestJson);
