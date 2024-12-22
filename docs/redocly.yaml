@@ -8,6 +8,7 @@ rules:
   no-unused-components: error
 theme:
   openapi:
+    expandResponses: 200,201
     htmlTemplate: ./templates/index.html
     theme:
       colors:

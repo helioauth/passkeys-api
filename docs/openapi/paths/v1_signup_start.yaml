@@ -1,8 +1,8 @@
 post:
   tags:
     - Sign-up
-  summary: Initiate sign-up process
-  description: Starts the sign-up process by generating an attestation challenge.
+  summary: Start sign-up
+  description: Generates a challenge ready to be passed to `navigator.credentials.create(options)`
   operationId: postSignupStart
   requestBody:
     content:

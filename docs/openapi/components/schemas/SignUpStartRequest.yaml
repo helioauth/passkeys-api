@@ -2,7 +2,7 @@ required:
   - name
 type: object
 description: >-
-  Request to start the sign-up process. Contains the name of the entity to be
+  Request to start the sign-up process. Contains the name of the user to be
   registered.
 properties:
   name:
