@@ -17,25 +17,25 @@
 package com.helioauth.passkeys.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.SignInFinishRequest;
-import com.helioauth.passkeys.api.contract.SignInFinishResponse;
-import com.helioauth.passkeys.api.contract.SignInStartRequest;
-import com.helioauth.passkeys.api.contract.SignInStartResponse;
-import com.helioauth.passkeys.api.contract.SignUpFinishRequest;
-import com.helioauth.passkeys.api.contract.SignUpFinishResponse;
-import com.helioauth.passkeys.api.contract.SignUpStartRequest;
-import com.helioauth.passkeys.api.contract.SignUpStartResponse;
+import com.helioauth.passkeys.api.generated.api.SignInApi;
+import com.helioauth.passkeys.api.generated.api.SignUpApi;
+import com.helioauth.passkeys.api.generated.models.SignInFinishRequest;
+import com.helioauth.passkeys.api.generated.models.SignInFinishResponse;
+import com.helioauth.passkeys.api.generated.models.SignInStartRequest;
+import com.helioauth.passkeys.api.generated.models.SignInStartResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpFinishRequest;
+import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpStartRequest;
+import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.service.UserSignInService;
 import com.helioauth.passkeys.api.service.UserSignupService;
 import com.helioauth.passkeys.api.service.exception.SignInFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -46,39 +46,43 @@ import jakarta.validation.Valid;
  */
 @Slf4j
 @RestController
-@RequestMapping("/v1")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-public class CredentialsController {
+public class CredentialsController implements SignUpApi, SignInApi {
 
     private final UserSignInService userSignInService;
     private final UserSignupService userSignupService;
 
-    @PostMapping(value = "/signup/start", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignUpStartResponse postSignupStart(@RequestBody @Valid SignUpStartRequest request) {
-        return userSignupService.startRegistration(request.name());
+    public ResponseEntity<SignUpStartResponse> postSignupStart(@RequestBody @Valid SignUpStartRequest request) {
+        return ResponseEntity.ok(
+            userSignupService.startRegistration(request.getName())
+        );
     }
 
-    @PostMapping(value = "/signup/finish", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignUpFinishResponse postSignupFinish(@RequestBody SignUpFinishRequest request) {
-        return userSignupService.finishRegistration(request.requestId(), request.publicKeyCredential());
+    public ResponseEntity<SignUpFinishResponse> postSignupFinish(@RequestBody SignUpFinishRequest request) {
+        return ResponseEntity.ok(
+            userSignupService.finishRegistration(request.getRequestId(), request.getPublicKeyCredential())
+        );
     }
 
-    @PostMapping(value = "/signin/start", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignInStartResponse postSignInCredential(@RequestBody SignInStartRequest request) {
+    public ResponseEntity<SignInStartResponse> postSignInCredential(@RequestBody SignInStartRequest request) {
         try {
-            return userSignInService.startAssertion(request.name());
+            return ResponseEntity.ok(
+                userSignInService.startAssertion(request.getName())
+            );
         } catch (JsonProcessingException e) {
             log.error("Sign in Credential failed", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sign in Credential failed");
         }
     }
 
-    @PostMapping(value = "/signin/finish", produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignInFinishResponse finishSignInCredential(@RequestBody SignInFinishRequest request) {
+    public ResponseEntity<SignInFinishResponse> finishSignInCredential(@RequestBody SignInFinishRequest request) {
         try {
-            String username = userSignInService.finishAssertion(request.requestId(), request.publicKeyCredentialWithAssertion());
-            return new SignInFinishResponse(request.requestId(), username);
+            String username = userSignInService.finishAssertion(request.getRequestId(), request.getPublicKeyCredentialWithAssertion());
+
+            return ResponseEntity.ok(
+                new SignInFinishResponse(request.getRequestId(), username)
+            );
         } catch (SignInFailedException e) {
             log.error("Sign in failed", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sign in failed");

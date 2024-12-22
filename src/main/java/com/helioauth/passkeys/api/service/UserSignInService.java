@@ -17,8 +17,8 @@
 package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.SignInStartResponse;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
+import com.helioauth.passkeys.api.generated.models.SignInStartResponse;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
 import com.helioauth.passkeys.api.service.exception.SignInFailedException;
 import lombok.RequiredArgsConstructor;

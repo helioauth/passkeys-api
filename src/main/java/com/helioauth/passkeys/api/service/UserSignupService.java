@@ -17,12 +17,12 @@
 package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.helioauth.passkeys.api.contract.SignUpFinishResponse;
-import com.helioauth.passkeys.api.contract.SignUpStartResponse;
 import com.helioauth.passkeys.api.domain.User;
 import com.helioauth.passkeys.api.domain.UserCredential;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
+import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
+import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
@@ -45,7 +45,7 @@ public class UserSignupService {
     private final UserRepository userRepository;
     private final UserCredentialRepository userCredentialRepository;
     private final WebAuthnAuthenticator webAuthnAuthenticator;
-    private final UserCredentialMapper usercredentialMapper;
+    private final UserCredentialMapper userCredentialMapper;
 
     public SignUpStartResponse startRegistration(String name) {
         userRepository.findByName(name).ifPresent(_ -> {
@@ -53,7 +53,7 @@ public class UserSignupService {
         });
 
         try {
-            return usercredentialMapper.toLegacySignUpStartResponse(webAuthnAuthenticator.startRegistration(name));
+            return webAuthnAuthenticator.startRegistration(name);
         } catch (JsonProcessingException e) {
             log.error("Register Credential failed", e);
             throw new SignUpFailedException();
@@ -71,7 +71,7 @@ public class UserSignupService {
                     .build();
             userRepository.save(user);
 
-            UserCredential userCredential = usercredentialMapper.fromCredentialRegistrationResult(result);
+            UserCredential userCredential = userCredentialMapper.fromCredentialRegistrationResult(result);
             userCredential.setUser(user);
             userCredentialRepository.save(userCredential);
 

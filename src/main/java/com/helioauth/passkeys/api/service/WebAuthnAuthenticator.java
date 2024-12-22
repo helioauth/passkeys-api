@@ -18,7 +18,7 @@ package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
-import com.helioauth.passkeys.api.contract.SignInStartResponse;
+import com.helioauth.passkeys.api.generated.models.SignInStartResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
