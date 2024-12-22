@@ -16,10 +16,10 @@
 
 package com.helioauth.passkeys.api.controller;
 
-import com.helioauth.passkeys.api.contract.SignInStartRequest;
-import com.helioauth.passkeys.api.contract.SignUpStartRequest;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
+import com.helioauth.passkeys.api.generated.models.SignInStartRequest;
+import com.helioauth.passkeys.api.generated.models.SignUpStartRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
