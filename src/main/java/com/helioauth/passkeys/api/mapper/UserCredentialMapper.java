@@ -18,7 +18,6 @@ package com.helioauth.passkeys.api.mapper;
 
 import com.helioauth.passkeys.api.domain.UserCredential;
 import com.helioauth.passkeys.api.generated.models.PasskeyCredential;
-import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -39,5 +38,4 @@ public interface UserCredentialMapper {
     @Mapping(target = "id", ignore = true)
     UserCredential fromCredentialRegistrationResult(CredentialRegistrationResult registrationResultDto);
 
-    com.helioauth.passkeys.api.contract.SignUpStartResponse toLegacySignUpStartResponse(SignUpStartResponse response);
 }
