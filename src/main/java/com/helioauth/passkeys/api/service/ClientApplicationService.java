@@ -39,29 +39,29 @@ public class ClientApplicationService {
 
     private final ClientApplicationRepository repository;
 
-    private final ClientApplicationMapper mapper;
+    private final ClientApplicationMapper clientApplicationMapper;
 
     private final SecureRandom random = new SecureRandom();
 
     public Optional<Application> get(UUID id) {
 
-        return repository.findById(id).map(mapper::toResponse);
+        return repository.findById(id).map(clientApplicationMapper::toResponse);
     }
 
     public Optional<ApplicationApiKey> getApiKey(UUID id) {
-        return repository.findById(id).map(mapper::toApiKeyResponse);
+        return repository.findById(id).map(clientApplicationMapper::toApiKeyResponse);
     }
 
     public List<Application> listAll() {
 
-        return mapper.toResponse(
+        return clientApplicationMapper.toResponse(
             repository.findAll()
         );
     }
 
     public Application add(String name) {
 
-        return mapper.toResponse(
+        return clientApplicationMapper.toResponse(
             repository.save(
                 new ClientApplication(name, generateApiKey())
             )
@@ -73,7 +73,7 @@ public class ClientApplicationService {
         return repository.findById(id)
                 .map(existing -> {
                     existing.setName(name);
-                    return mapper.toResponse(repository.save(existing));
+                    return clientApplicationMapper.toResponse(repository.save(existing));
                 });
     }
 
