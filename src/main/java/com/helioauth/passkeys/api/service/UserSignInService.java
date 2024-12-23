@@ -46,6 +46,7 @@ public class UserSignInService {
     @Transactional
     public String finishAssertion(String requestId, String publicKeyCredentialJson) {
         try {
+            // TODO return user id also
             CredentialAssertionResult result = webAuthnAuthenticator.finishAssertion(requestId, publicKeyCredentialJson);
 
             userCredentialRepository.updateUsageByUserHandleAndCredentialId(
