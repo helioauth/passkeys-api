@@ -2,9 +2,8 @@ required:
   - name
 type: object
 description: >-
-  Request to start the sign-up process. Contains the name of the user to be
-  registered.
+  Request to start the sign-up process
 properties:
   name:
     type: string
-    description: Name of the user to be registered.
+    description: Username to be registered. This can also be an identifier or an email address.

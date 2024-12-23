@@ -1,12 +1,10 @@
 type: object
-description: >-
-  Response to sign-in start request. Contains the request ID and options for
-  assertion.
+description: Response to sign-in start request
 properties:
   requestId:
     type: string
     description: Unique identifier for the sign-in request.
   options:
     type: string
-    description: Options for assertion to pass to `navigator.credentials.create()`
+    description: Options for assertion to pass to `navigator.credentials.get(options)`
     x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonRawValue'

@@ -1,5 +1,5 @@
 type: object
-description: Request to start the sign-in process. Contains the name.
+description: Request to start the sign-in process.
 properties:
   name:
     type: string

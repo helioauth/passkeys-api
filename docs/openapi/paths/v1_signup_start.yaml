@@ -2,7 +2,11 @@ post:
   tags:
     - Sign-up
   summary: Start sign-up
-  description: Generates a challenge ready to be passed to `navigator.credentials.create(options)`
+  description: >-
+    *(Can be called from the browser)*
+  
+  
+    Generates a challenge ready to be passed to `navigator.credentials.create(options)`
   operationId: postSignupStart
   requestBody:
     content:

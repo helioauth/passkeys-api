@@ -5,9 +5,7 @@ description: >-
 properties:
   requestId:
     type: string
-    description: Unique identifier for the sign-up request (from `SignUpStartResponse`)
+    description: Unique identifier for the sign-up request (from `/v1/signup/start`)
   publicKeyCredential:
     type: string
-    description: >-
-      The public key credential for attestation as returned by
-      `navigator.credentials.create()`
+    description: The result of `navigator.credentials.create(options)` serialized as JSON

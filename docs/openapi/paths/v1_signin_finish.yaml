@@ -1,6 +1,8 @@
 post:
   tags:
     - Sign-in
+  summary: Complete sign-in
+  description: Validates the credential response from the client and returns the user's identifier.
   operationId: finishSignInCredential
   requestBody:
     content:

@@ -1,6 +1,12 @@
 post:
   tags:
     - Sign-in
+  summary: Start sign-in
+  description: >-
+    *(Can be called from the browser)*
+    
+    
+    Generates a challenge ready to be passed to `navigator.credentials.get(options)`.
   operationId: postSignInCredential
   requestBody:
     content:

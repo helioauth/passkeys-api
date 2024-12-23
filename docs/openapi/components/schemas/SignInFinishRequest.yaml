@@ -1,11 +1,9 @@
 type: object
-description: >-
-  Request to finish the sign-in process. Contains the request ID and public key
-  credential with assertion.
+description: Request to finish the sign-in process.
 properties:
   requestId:
     type: string
-    description: Unique identifier for the sign-in request (from `SignInStartResponse`).
+    description: Unique identifier for the sign-in request (returned by `/v1/signin/start`).
   publicKeyCredentialWithAssertion:
     type: string
-    description: The public key credential with assertion.
+    description: The result of `navigator.credentials.get(options)` serialized as JSON.
