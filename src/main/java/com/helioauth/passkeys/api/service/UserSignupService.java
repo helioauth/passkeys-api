@@ -48,10 +48,6 @@ public class UserSignupService {
     private final UserCredentialMapper userCredentialMapper;
 
     public SignUpStartResponse startRegistration(String name) {
-        userRepository.findByName(name).ifPresent(_ -> {
-            throw new UsernameAlreadyRegisteredException();
-        });
-
         try {
             return webAuthnAuthenticator.startRegistration(name);
         } catch (JsonProcessingException e) {
@@ -63,6 +59,11 @@ public class UserSignupService {
     @Transactional
     public SignUpFinishResponse finishRegistration(String requestId, String publicKeyCredentialJson) {
         try {
+            String username = webAuthnAuthenticator.getUsernameByRequestId(requestId);
+            if (userRepository.findByName(username).isPresent()) {
+                throw new UsernameAlreadyRegisteredException();
+            }
+
             CredentialRegistrationResult result = webAuthnAuthenticator.finishRegistration(requestId, publicKeyCredentialJson);
 
             User user = User.builder()
