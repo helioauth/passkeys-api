@@ -1,8 +1,8 @@
 sequenceDiagram
+    participant Authenticator as Device Authenticator
     actor User
     participant Browser
     participant PasskeyAPI as Passkeys API
-    participant Authenticator as Device Authenticator
     participant Backend as Your Backend
 
     User->>Browser: Initiates sign-in
