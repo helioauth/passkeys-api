@@ -70,6 +70,11 @@ public class WebAuthnAuthenticator {
 
     private static final SecureRandom random = new SecureRandom();
 
+    public SignUpStartResponse startRegistration(String name) throws JsonProcessingException {
+        ByteArray id = generateRandom();
+        return startRegistration(name, id);
+    }
+
     public SignUpStartResponse startRegistration(String name, ByteArray userId) throws JsonProcessingException {
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
 
@@ -98,9 +103,14 @@ public class WebAuthnAuthenticator {
         );
     }
 
-    public SignUpStartResponse startRegistration(String name) throws JsonProcessingException {
-        ByteArray id = generateRandom();
-        return startRegistration(name, id);
+    public String getUsernameByRequestId(String requestId) throws IOException {
+        String requestJson = webAuthnRequestCache.getIfPresent(requestId);
+        if (requestJson == null) {
+            throw new CredentialRegistrationFailedException("Request not found.");
+        }
+
+        PublicKeyCredentialCreationOptions request = PublicKeyCredentialCreationOptions.fromJson(requestJson);
+        return request.getUser().getName();
     }
 
     public CredentialRegistrationResult finishRegistration(String requestId, String publicKeyCredentialJson) throws IOException {
