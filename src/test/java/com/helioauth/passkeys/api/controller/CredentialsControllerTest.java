@@ -16,6 +16,7 @@
 
 package com.helioauth.passkeys.api.controller;
 
+import com.helioauth.passkeys.api.domain.User;
 import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
 import com.helioauth.passkeys.api.generated.models.SignInStartRequest;
@@ -92,6 +93,23 @@ class CredentialsControllerTest {
         String requestJson = objectMapper.writeValueAsString(request);
 
         mockMvc.perform(post(PATH_SIGNIN_START)
+            .contentType("application/json")
+            .content(requestJson)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void postSignUpStart_existingUser() throws Exception {
+        userRepository.save(User.builder()
+            .name("test")
+            .displayName("test")
+            .build());
+
+        SignUpStartRequest request = new SignUpStartRequest("test");
+
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post(PATH_SIGNUP_START)
             .contentType("application/json")
             .content(requestJson)
         ).andExpect(status().isOk());
