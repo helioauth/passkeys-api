@@ -42,15 +42,15 @@ public class RequestHeaderAuthenticationProvider implements AuthenticationProvid
         String authHeaderValue = String.valueOf(authentication.getPrincipal());
 
         String apiKey = adminConfigProperties.getAuth().getApiKey();
-        if(authHeaderValue == null || authHeaderValue.isBlank() || !authHeaderValue.equals(apiKey)) {
-            throw new BadCredentialsException("Bad admin credentials");
+        if(authHeaderValue.equals(apiKey)) {
+            return new PreAuthenticatedAuthenticationToken(
+                authentication.getPrincipal(),
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+            );
         }
 
-        return new PreAuthenticatedAuthenticationToken(
-            authentication.getPrincipal(),
-            null,
-            List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
-        );
+        throw new BadCredentialsException("Bad admin credentials");
     }
 
     @Override
