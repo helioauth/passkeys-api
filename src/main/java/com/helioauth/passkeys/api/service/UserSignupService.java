@@ -66,11 +66,10 @@ public class UserSignupService {
 
             CredentialRegistrationResult result = webAuthnAuthenticator.finishRegistration(requestId, publicKeyCredentialJson);
 
-            User user = User.builder()
+            User user = userRepository.save(User.builder()
                     .name(result.name())
                     .displayName(result.displayName())
-                    .build();
-            userRepository.save(user);
+                    .build());
 
             UserCredential userCredential = userCredentialMapper.fromCredentialRegistrationResult(result);
             userCredential.setUser(user);
