@@ -17,6 +17,7 @@
 package com.helioauth.passkeys.api.service;
 
 import com.helioauth.passkeys.api.domain.UserRepository;
+import com.helioauth.passkeys.api.service.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,10 @@ public class UserAccountManager {
     private final UserRepository userRepository;
 
     public void deleteUser(UUID userUuid) {
+        if (userUuid == null || !userRepository.existsById(userUuid)) {
+            throw new UserNotFoundException();
+        }
+
         userRepository.deleteById(userUuid);
     }
 }
