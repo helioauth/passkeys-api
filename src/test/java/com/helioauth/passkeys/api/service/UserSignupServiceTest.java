@@ -8,6 +8,7 @@ import com.helioauth.passkeys.api.domain.UserRepository;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
+import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import com.helioauth.passkeys.api.service.exception.UsernameAlreadyRegisteredException;
@@ -55,7 +56,7 @@ class UserSignupServiceTest {
     void testStartRegistration_Success() throws Exception {
         // Arrange
         String name = "testuser";
-        SignUpStartResponse mockResponse = new SignUpStartResponse("requestId123", "{\"options\":\"value\"}");
+        AssertionStartResult mockResponse = new AssertionStartResult("requestId123", "{\"options\":\"value\"}");
         when(webAuthnAuthenticator.startRegistration(name)).thenReturn(mockResponse);
 
         // Act

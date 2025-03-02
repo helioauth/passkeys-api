@@ -26,6 +26,7 @@ import com.helioauth.passkeys.api.generated.models.SignUpFinishRequest;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
+import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.CreateCredentialFailedException;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
@@ -117,7 +118,7 @@ class UserCredentialManagerTest {
     void createCredential_returnsResponse_whenSuccessful() throws JsonProcessingException {
         // Arrange
         String userName = "testUser";
-        SignUpStartResponse expectedResponse = new SignUpStartResponse("requestId", "{\"key\":\"value\"}");
+        AssertionStartResult expectedResponse = new AssertionStartResult("requestId", "{\"key\":\"value\"}");
         when(authenticator.startRegistration(userName)).thenReturn(expectedResponse);
 
         // Act

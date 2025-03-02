@@ -18,9 +18,9 @@ package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
-import com.helioauth.passkeys.api.generated.models.SignInStartResponse;
-import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
+import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
+import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.CredentialAssertionFailedException;
@@ -70,12 +70,14 @@ public class WebAuthnAuthenticator {
 
     private static final SecureRandom random = new SecureRandom();
 
-    public SignUpStartResponse startRegistration(String name) throws JsonProcessingException {
+    private final RegistrationResponseMapper registrationResponseMapper;
+
+    public AssertionStartResult startRegistration(String name) throws JsonProcessingException {
         ByteArray id = generateRandom();
         return startRegistration(name, id);
     }
 
-    public SignUpStartResponse startRegistration(String name, ByteArray userId) throws JsonProcessingException {
+    public AssertionStartResult startRegistration(String name, ByteArray userId) throws JsonProcessingException {
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
 
         PublicKeyCredentialCreationOptions request = relyingParty.startRegistration(StartRegistrationOptions.builder()
@@ -97,10 +99,7 @@ public class WebAuthnAuthenticator {
         String requestId = generateRandom().getHex();
         webAuthnRequestCache.put(requestId, request.toJson());
 
-        return new SignUpStartResponse(
-            requestId,
-            request.toCredentialsCreateJson()
-        );
+        return new AssertionStartResult(requestId, request.toCredentialsCreateJson());
     }
 
     public String getUsernameByRequestId(String requestId) throws IOException {
@@ -138,7 +137,7 @@ public class WebAuthnAuthenticator {
         }
     }
 
-    public SignInStartResponse startAssertion(String name) throws JsonProcessingException {
+    public AssertionStartResult startAssertion(String name) throws JsonProcessingException {
         AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
                 .username(name)
                 .build());
@@ -146,7 +145,7 @@ public class WebAuthnAuthenticator {
         String requestId = generateRandom().getHex();
         webAuthnRequestCache.put(requestId, request.toJson());
 
-        return new SignInStartResponse(requestId, request.toCredentialsGetJson());
+        return new AssertionStartResult(requestId, request.toCredentialsGetJson());
     }
 
     public CredentialAssertionResult finishAssertion(String requestId, String publicKeyCredentialJson) throws IOException {

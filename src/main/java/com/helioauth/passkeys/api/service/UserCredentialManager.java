@@ -25,6 +25,7 @@ import com.helioauth.passkeys.api.generated.models.ListPasskeysResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishRequest;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
+import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.CreateCredentialFailedException;
@@ -48,10 +49,13 @@ public class UserCredentialManager {
     private final UserRepository userRepository;
     private final UserCredentialRepository userCredentialRepository;
     private final UserCredentialMapper userCredentialMapper;
+    private final RegistrationResponseMapper registrationResponseMapper;
 
     public SignUpStartResponse createCredential(String name) {
         try {
-            return webAuthnAuthenticator.startRegistration(name);
+            return registrationResponseMapper.toSignUpStartResponse(
+                webAuthnAuthenticator.startRegistration(name)
+            );
         } catch (JsonProcessingException e) {
             log.error("Creating a new credential failed", e);
             throw new CreateCredentialFailedException();

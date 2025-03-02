@@ -23,6 +23,7 @@ import com.helioauth.passkeys.api.domain.UserCredentialRepository;
 import com.helioauth.passkeys.api.domain.UserRepository;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
+import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
@@ -46,10 +47,13 @@ public class UserSignupService {
     private final UserCredentialRepository userCredentialRepository;
     private final WebAuthnAuthenticator webAuthnAuthenticator;
     private final UserCredentialMapper userCredentialMapper;
+    private final RegistrationResponseMapper registrationResponseMapper;
 
     public SignUpStartResponse startRegistration(String name) {
         try {
-            return webAuthnAuthenticator.startRegistration(name);
+            return registrationResponseMapper.toSignUpStartResponse(
+                webAuthnAuthenticator.startRegistration(name)
+            );
         } catch (JsonProcessingException e) {
             log.error("Register Credential failed", e);
             throw new SignUpFailedException();

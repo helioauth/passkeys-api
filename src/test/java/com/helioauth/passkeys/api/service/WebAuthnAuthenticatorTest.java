@@ -18,8 +18,8 @@ package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
-import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
+import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.CredentialRegistrationFailedException;
 import com.yubico.webauthn.FinishRegistrationOptions;
@@ -130,14 +130,14 @@ public class WebAuthnAuthenticatorTest {
         when(relyingParty.startRegistration(any(StartRegistrationOptions.class))).thenReturn(pkcco);
 
         // Execute the test
-        SignUpStartResponse response = authenticator.startRegistration(TEST_USER_NAME, TEST_USER_ID);
+        AssertionStartResult response = authenticator.startRegistration(TEST_USER_NAME, TEST_USER_ID);
 
         // Verify interactions and assert results
         verify(relyingParty, times(1)).startRegistration(any(StartRegistrationOptions.class));
         verify(webAuthnRequestCache, times(1)).put(anyString(), anyString());
         assertNotNull(response);
-        assertNotNull(response.getRequestId());
-        assertNotNull(response.getOptions());
+        assertNotNull(response.requestId());
+        assertNotNull(response.options());
     }
 
     @Test
@@ -154,14 +154,15 @@ public class WebAuthnAuthenticatorTest {
         when(relyingParty.startRegistration(any(StartRegistrationOptions.class))).thenReturn(pkcco);
 
         // Execute the test
-        SignUpStartResponse response = authenticator.startRegistration(TEST_USER_NAME);
+//        SignUpStartResponse response = authenticator.startRegistration(TEST_USER_NAME);
+        AssertionStartResult response = authenticator.startRegistration(TEST_USER_NAME);
 
         // Verify interactions and assert results
         verify(relyingParty, times(1)).startRegistration(any(StartRegistrationOptions.class));
         verify(webAuthnRequestCache, times(1)).put(anyString(), anyString());
         assertNotNull(response);
-        assertNotNull(response.getRequestId());
-        assertNotNull(response.getOptions());
+        assertNotNull(response.requestId());
+        assertNotNull(response.options());
     }
 
     @Test
