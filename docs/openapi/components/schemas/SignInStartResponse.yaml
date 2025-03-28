@@ -8,8 +8,11 @@ properties:
     type: boolean
     description: Indicates whether or not this account exists
   options:
-    type: string
+    type: object
     description: >
-      JSON string representing the options argument that should be passed to `navigator.credentials.get(options)` if 
+      JSON object representing the options argument that should be passed to `navigator.credentials.get(options)` if 
       `accountExists` is `true` or to `navigator.credentials.create(options)` if `accountExists` is `false`.
     x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonRawValue'
+    properties:
+      publicKey:
+        type: object

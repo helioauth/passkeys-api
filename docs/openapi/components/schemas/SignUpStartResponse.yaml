@@ -7,6 +7,9 @@ properties:
     type: string
     description: Unique identifier for the sign-up request.
   options:
-    type: string
+    type: object
     description: Options to pass to `navigator.credentials.create()`
     x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonRawValue'
+    properties:
+      publicKey:
+        type: object
