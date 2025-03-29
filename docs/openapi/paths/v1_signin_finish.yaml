@@ -17,3 +17,5 @@ post:
         application/json:
           schema:
             $ref: ../components/schemas/SignInFinishResponse.yaml
+  security:
+    - app-api-key: []

@@ -77,3 +77,11 @@ components:
       type: apiKey
       name: X-Api-Key
       in: header
+    app-id:
+      type: apiKey
+      name: X-App-Id
+      in: header
+    app-api-key:
+      type: apiKey
+      name: X-Api-Key
+      in: header
