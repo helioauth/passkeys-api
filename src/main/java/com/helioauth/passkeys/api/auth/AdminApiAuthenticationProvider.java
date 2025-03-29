@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class RequestHeaderAuthenticationProvider implements AuthenticationProvider {
+public class AdminApiAuthenticationProvider implements AuthenticationProvider {
 
     private final AdminConfigProperties adminConfigProperties;
 

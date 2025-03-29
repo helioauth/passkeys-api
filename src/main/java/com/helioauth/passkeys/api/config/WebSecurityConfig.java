@@ -16,9 +16,12 @@
 
 package com.helioauth.passkeys.api.config;
 
-import com.helioauth.passkeys.api.auth.RequestHeaderAuthenticationProvider;
+import com.helioauth.passkeys.api.auth.AdminApiAuthenticationProvider;
+import com.helioauth.passkeys.api.auth.ApplicationApiKeyAuthenticationProvider;
+import com.helioauth.passkeys.api.auth.ApplicationIdAuthenticationProvider;
 import com.helioauth.passkeys.api.config.properties.AdminConfigProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,19 +46,27 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final RequestHeaderAuthenticationProvider requestHeaderAuthenticationProvider;
+    private final AdminApiAuthenticationProvider adminApiAuthenticationProvider;
+    private final ApplicationIdAuthenticationProvider applicationIdAuthenticationProvider;
+    private final ApplicationApiKeyAuthenticationProvider applicationApiKeyAuthenticationProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                                           RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter) throws Exception {
+                                          RequestHeaderAuthenticationFilter adminAuthFilter,
+                                          RequestHeaderAuthenticationFilter applicationIdAuthFilter,
+                                          RequestHeaderAuthenticationFilter applicationApiKeyAuthFilter) throws Exception {
 
         http
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterAfter(requestHeaderAuthenticationFilter, HeaderWriterFilter.class)
+            .addFilterAfter(adminAuthFilter, HeaderWriterFilter.class)
+            .addFilterAfter(applicationIdAuthFilter, HeaderWriterFilter.class)
+            .addFilterAfter(applicationApiKeyAuthFilter, HeaderWriterFilter.class)
             .authorizeHttpRequests(registry -> registry
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/v1/signup/start").hasRole("FRONTEND_APPLICATION")
+                .requestMatchers("/v1/signup/finish").hasRole("APPLICATION")
                 .anyRequest().permitAll()
             )
             .exceptionHandling(config -> config
@@ -66,19 +77,47 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(AuthenticationManager authenticationManager,
-                                                                               AdminConfigProperties adminConfigProperties) {
+    public RequestHeaderAuthenticationFilter adminAuthFilter(AdminConfigProperties adminConfigProperties) {
         RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
         filter.setPrincipalRequestHeader(adminConfigProperties.getAuth().getHeaderName());
         filter.setExceptionIfHeaderMissing(false);
         filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/admin/**"));
-        filter.setAuthenticationManager(authenticationManager);
+        filter.setAuthenticationManager(adminAuthenticationManager());
 
         return filter;
     }
 
     @Bean
-    protected AuthenticationManager authenticationManager() {
-        return new ProviderManager(List.of(requestHeaderAuthenticationProvider));
+    public RequestHeaderAuthenticationFilter applicationIdAuthFilter(@Value("${app.auth.app-id-header}") String authHeader) {
+        RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
+        filter.setPrincipalRequestHeader(authHeader);
+        filter.setExceptionIfHeaderMissing(false);
+        filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/v1/signup/start"));
+        filter.setAuthenticationManager(appIdAuthenticationManager());
+
+        return filter;
+    }
+
+    @Bean
+    public RequestHeaderAuthenticationFilter applicationApiKeyAuthFilter(@Value("${app.auth.api-key-header}") String authHeader) {
+        RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
+        filter.setPrincipalRequestHeader(authHeader);
+        filter.setExceptionIfHeaderMissing(false);
+        filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/v1/signup/finish"));
+        filter.setAuthenticationManager(appApiKeyAuthenticationManager());
+
+        return filter;
+    }
+
+    protected AuthenticationManager adminAuthenticationManager() {
+        return new ProviderManager(List.of(adminApiAuthenticationProvider));
+    }
+
+    protected AuthenticationManager appIdAuthenticationManager() {
+        return new ProviderManager(List.of(applicationIdAuthenticationProvider));
+    }
+
+    protected AuthenticationManager appApiKeyAuthenticationManager() {
+        return new ProviderManager(List.of(applicationApiKeyAuthenticationProvider));
     }
 }
