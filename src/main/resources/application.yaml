@@ -12,3 +12,8 @@ relying-party:
   display-name: HelioAuth Passkeys API
   hostname: localhost
   allow-origin-port: false
+
+app:
+  auth:
+    app-id-header: X-App-Id
+    api-key-header: X-Api-Key

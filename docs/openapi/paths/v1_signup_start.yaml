@@ -21,3 +21,5 @@ post:
         application/json:
           schema:
             $ref: ../components/schemas/SignUpStartResponse.yaml
+  security:
+    - app-id: []
