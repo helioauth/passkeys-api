@@ -34,6 +34,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -62,18 +64,18 @@ public class User {
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private Instant createdAt;
 
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCredential> userCredentials;
 
     @ManyToOne(targetEntity = ClientApplication.class, fetch = jakarta.persistence.FetchType.LAZY)
-    @JoinColumn(name = "application_id", nullable = true)
+    @JoinColumn(name = "application_id")
     private ClientApplication clientApplication;
 }
