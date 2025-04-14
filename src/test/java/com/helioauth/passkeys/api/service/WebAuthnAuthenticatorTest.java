@@ -29,9 +29,15 @@ import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
+// Remove unused import: import com.yubico.webauthn.CredentialRepository;
+import com.helioauth.passkeys.api.webauthn.DatabaseCredentialRepository; // Add import for the correct type
+import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper; // Add import for the missing spy
+import com.yubico.webauthn.data.AuthenticatorAttestationResponse; // Import AuthenticatorAttestationResponse
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.exception.HexException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
+import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties; // Import properties
+import org.junit.jupiter.api.BeforeEach; // Import BeforeEach
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -42,11 +48,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set; // Import Set
 
+import static org.junit.jupiter.api.Assertions.assertEquals; // Import assertEquals
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue; // Import assertTrue
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn; // Import doReturn
+import static org.mockito.Mockito.doThrow; // Import doThrow
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -57,6 +68,8 @@ public class WebAuthnAuthenticatorTest {
 
     private static final String TEST_USER_NAME = "test3";
     private static final ByteArray TEST_USER_ID = new ByteArray(new byte[]{1, 2, 3});
+    private static final String TEST_RP_ID = "localhost"; // Add RP constants
+    private static final String TEST_RP_NAME = "Test RP";
     private static final UserIdentity USER_IDENTITY = UserIdentity.builder()
         .name(TEST_USER_NAME)
         .displayName(TEST_USER_NAME)
@@ -99,88 +112,90 @@ public class WebAuthnAuthenticatorTest {
     }""";
 
     @Mock
-    private RelyingParty relyingParty;
-
-    @Mock
     private Cache<String, String> webAuthnRequestCache;
 
     @Spy
+    private WebAuthnRelyingPartyProperties relyingPartyProperties = new WebAuthnRelyingPartyProperties();
+
+    @Mock
+    private DatabaseCredentialRepository databaseCredentialRepository;
+
+    @Spy // Keep Spy for the mapper
     private CredentialRegistrationResultMapper credentialRegistrationResultMapper = Mappers.getMapper(CredentialRegistrationResultMapper.class);
+
+    // Add the missing spy
+    @Spy
+    private RegistrationResponseMapper registrationResponseMapper = Mappers.getMapper(RegistrationResponseMapper.class);
 
     @InjectMocks
     private WebAuthnAuthenticator authenticator;
-    
-    public void setUpRelyingPartyIdentityMock() {
-        when(relyingParty.getIdentity()).thenReturn(
-            RelyingPartyIdentity.builder().id("testId").name("testName").build()
-        );
+
+    // Remove setUpRelyingPartyIdentityMock method
+
+    @BeforeEach
+    void setUp() {
+        relyingPartyProperties.setHostname(TEST_RP_ID);
+        relyingPartyProperties.setDisplayName(TEST_RP_NAME);
+        relyingPartyProperties.setAllowOriginPort(true);
     }
 
     @Test
     public void testStartRegistrationWithNameAndUserId() throws JsonProcessingException, HexException {
-        setUpRelyingPartyIdentityMock();
-
-        PublicKeyCredentialCreationOptions pkcco = PublicKeyCredentialCreationOptions.builder()
-            .rp(relyingParty.getIdentity())
-            .user(USER_IDENTITY)
-            .challenge(ByteArray.fromHex("1234567890abcdef"))
-            .pubKeyCredParams(List.of())
-            .build();
-
-        when(relyingParty.startRegistration(any(StartRegistrationOptions.class))).thenReturn(pkcco);
+        // RelyingParty is built inside authenticator.startRegistration
 
         // Execute the test
-        AssertionStartResult response = authenticator.startRegistration(TEST_USER_NAME, TEST_USER_ID);
+        // Use the 3-arg version for clarity, passing the mocked RP ID
+        AssertionStartResult response = authenticator.startRegistration(TEST_USER_NAME, TEST_USER_ID, TEST_RP_ID);
 
         // Verify interactions and assert results
-        verify(relyingParty, times(1)).startRegistration(any(StartRegistrationOptions.class));
         verify(webAuthnRequestCache, times(1)).put(anyString(), anyString());
         assertNotNull(response);
         assertNotNull(response.requestId());
         assertNotNull(response.options());
+        // Optionally, assert specific options based on the mocked properties
+        assertTrue(response.options().contains("\"id\":\"" + TEST_RP_ID + "\""));
+        assertTrue(response.options().contains("\"name\":\"" + TEST_RP_NAME + "\""));
     }
 
     @Test
     public void testStartRegistrationWithName() throws JsonProcessingException, HexException {
-        setUpRelyingPartyIdentityMock();
-
-        PublicKeyCredentialCreationOptions pkcco = PublicKeyCredentialCreationOptions.builder()
-            .rp(relyingParty.getIdentity())
-            .user(USER_IDENTITY)
-            .challenge(ByteArray.fromHex("1234567890abcdef"))
-            .pubKeyCredParams(List.of())
-            .build();
-
-        when(relyingParty.startRegistration(any(StartRegistrationOptions.class))).thenReturn(pkcco);
+        // RelyingParty is built inside authenticator.startRegistration using default hostname from properties
 
         // Execute the test
-//        SignUpStartResponse response = authenticator.startRegistration(TEST_USER_NAME);
         AssertionStartResult response = authenticator.startRegistration(TEST_USER_NAME);
 
         // Verify interactions and assert results
-        verify(relyingParty, times(1)).startRegistration(any(StartRegistrationOptions.class));
         verify(webAuthnRequestCache, times(1)).put(anyString(), anyString());
         assertNotNull(response);
         assertNotNull(response.requestId());
         assertNotNull(response.options());
+        assertTrue(response.options().contains("\"id\":\"" + TEST_RP_ID + "\""));
+        assertTrue(response.options().contains("\"name\":\"" + TEST_RP_NAME + "\""));
     }
 
     @Test
     public void testFinishRegistrationSuccess() throws IOException, RegistrationFailedException {
         String requestId = "requestId";
 
-        RegistrationResult mockResult = mock( RegistrationResult.class);
+        // Prepare the expected result from the mapper
+        CredentialRegistrationResult mappedResult = new CredentialRegistrationResult("name", "displayName", "credentialId", "userHandle", 1L, "publicKeyCose",
+                "attestationObject", "clientDataJson", true, true, true);
+
+        // Stub the spy's method using doReturn/when syntax
+        doReturn(mappedResult).when(credentialRegistrationResultMapper)
+            .fromRegistrationResult(
+                any(RegistrationResult.class),
+                any(UserIdentity.class),
+                any(AuthenticatorAttestationResponse.class) // Use specific type
+            );
 
         when(webAuthnRequestCache.getIfPresent(requestId)).thenReturn(AUTHENTICATOR_REQUEST_JSON);
-        when(relyingParty.finishRegistration(any(FinishRegistrationOptions.class))).thenReturn(mockResult);
-        when(credentialRegistrationResultMapper.fromRegistrationResult(any(), any(), any()))
-            .thenReturn(new CredentialRegistrationResult("name", "displayName", "credentialId", "userHandle", 1L, "publicKeyCose",
-                "attestationObject", "clientDataJson", true, true, true));
+        // Internal call to PublicKeyCredential.parseRegistrationResponseJson happens
 
         CredentialRegistrationResult result = authenticator.finishRegistration(requestId, AUTHENTICATOR_RESPONSE_JSON);
 
         assertNotNull(result);
-        assertNotNull(result.name());
+        assertEquals(mappedResult.name(), result.name()); // Check mapped result (which came from the stub)
         verify(webAuthnRequestCache, times(1)).invalidate(requestId);
     }
 
@@ -202,17 +217,26 @@ public class WebAuthnAuthenticatorTest {
     @Test
     public void testFinishRegistrationThrowsException() throws RegistrationFailedException {
         String requestId = "requestId";
-
         when(webAuthnRequestCache.getIfPresent(requestId)).thenReturn(AUTHENTICATOR_REQUEST_JSON);
-        when(relyingParty.finishRegistration(any(FinishRegistrationOptions.class)))
-            .thenThrow(new RegistrationFailedException(new IllegalArgumentException()));
 
+        // Simulate failure during mapping using doThrow/when syntax for the spy
+        doThrow(new RuntimeException("Simulated mapping error")).when(credentialRegistrationResultMapper)
+            .fromRegistrationResult(
+                any(RegistrationResult.class),
+                any(UserIdentity.class),
+                any(AuthenticatorAttestationResponse.class) // Use specific type
+            );
+
+        // Assert that our service wraps the internal exception
         CredentialRegistrationFailedException exception = assertThrows(
             CredentialRegistrationFailedException.class,
             () -> authenticator.finishRegistration(requestId, AUTHENTICATOR_RESPONSE_JSON)
         );
         assertNotNull(exception.getMessage());
-        
+        assertTrue(exception.getMessage().contains("Failed to finish registration")); // Check message
+        assertNotNull(exception.getCause()); // Check that the original cause is wrapped
+        assertEquals("Simulated mapping error", exception.getCause().getMessage());
+
         verify(webAuthnRequestCache, times(1)).invalidate(requestId);
     }
 }
