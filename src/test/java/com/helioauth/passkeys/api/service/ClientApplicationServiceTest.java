@@ -18,8 +18,10 @@ package com.helioauth.passkeys.api.service;
 
 import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
+import com.helioauth.passkeys.api.generated.models.AddApplicationRequest;
 import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
+import com.helioauth.passkeys.api.generated.models.EditApplicationRequest;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,7 +77,9 @@ public class ClientApplicationServiceTest {
         when(repository.save(any(ClientApplication.class))).thenReturn(CLIENT_APPLICATION);
 
         // Execute
-        Application result = service.add(DTO.getName());
+        AddApplicationRequest addApplicationRequest = new AddApplicationRequest();
+        addApplicationRequest.setName(DTO.getName());
+        Application result = service.add(addApplicationRequest);
 
         // Capture the argument
         verify(repository).save(argumentCaptor.capture());
@@ -119,7 +123,9 @@ public class ClientApplicationServiceTest {
         when(repository.save(any(ClientApplication.class))).thenReturn(existingClientApplication);
 
         // Execute
-        Optional<Application> result = service.edit(id, newName);
+        EditApplicationRequest editApplicationRequest = new EditApplicationRequest();
+        editApplicationRequest.setName(newName);
+        Optional<Application> result = service.edit(id, editApplicationRequest);
 
         // Validate
         assertTrue(result.isPresent());
