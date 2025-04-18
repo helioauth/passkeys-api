@@ -18,8 +18,10 @@ package com.helioauth.passkeys.api.service;
 
 import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
+import com.helioauth.passkeys.api.generated.models.AddApplicationRequest;
 import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
+import com.helioauth.passkeys.api.generated.models.EditApplicationRequest;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -59,22 +61,28 @@ public class ClientApplicationService {
         );
     }
 
-    public Application add(String name) {
-
+    public Application add(AddApplicationRequest request) {
         return clientApplicationMapper.toResponse(
             repository.save(
-                new ClientApplication(name, generateApiKey())
+                ClientApplication.builder()
+                .name(request.getName())
+                .apiKey(generateApiKey())
+                .relyingPartyHostname(request.getRelyingPartyHostname())
+                .allowedOrigins(request.getAllowedOrigins())
+                .build()
             )
         );
     }
 
     @Transactional
-    public Optional<Application> edit(UUID id, String name) {
+    public Optional<Application> edit(UUID id, EditApplicationRequest request) {
         return repository.findById(id)
-                .map(existing -> {
-                    existing.setName(name);
-                    return clientApplicationMapper.toResponse(repository.save(existing));
-                });
+            .map(existing -> {
+                existing.setName(request.getName());
+                existing.setRelyingPartyHostname(request.getRelyingPartyHostname());
+                existing.setAllowedOrigins(request.getAllowedOrigins());
+                return clientApplicationMapper.toResponse(repository.save(existing));
+            });
     }
 
     @Transactional

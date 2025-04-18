@@ -1,12 +1,12 @@
 type: object
-description: Request to add a new client application
+description: Represents a request to edit an application.
 properties:
   name:
     type: string
-    description: Name of the new application.
+    description: Name of the application.
   relyingPartyHostname:
     type: string
-    description: Hostname of the application, e.g. example.com
+    description: Hostname of the relying party.
   allowedOrigins:
     type: string
     description: Allowed origins for the application, comma separated
