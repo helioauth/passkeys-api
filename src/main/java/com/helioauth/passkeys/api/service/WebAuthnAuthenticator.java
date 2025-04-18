@@ -152,16 +152,16 @@ public class WebAuthnAuthenticator {
         PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
             PublicKeyCredential.parseRegistrationResponseJson(publicKeyCredentialJson);
 
+        PublicKeyCredentialCreationOptions request = PublicKeyCredentialCreationOptions.fromJson(requestJson);
+
+        // Extract the rpId used during startRegistration from the cached request
+        String rpId = request.getRp().getId();
+        log.debug("Finishing registration for request ID '{}' using RP ID '{}'", requestId, rpId);
+
+        // Build a RelyingParty instance matching the one used at the start
+        RelyingParty relyingParty = buildRelyingParty(rpId);
+
         try {
-            PublicKeyCredentialCreationOptions request = PublicKeyCredentialCreationOptions.fromJson(requestJson);
-
-            // Extract the rpId used during startRegistration from the cached request
-            String rpId = request.getRp().getId();
-            log.debug("Finishing registration for request ID '{}' using RP ID '{}'", requestId, rpId);
-
-            // Build a RelyingParty instance matching the one used at the start
-            RelyingParty relyingParty = buildRelyingParty(rpId);
-
             RegistrationResult result = relyingParty.finishRegistration(FinishRegistrationOptions.builder()
                     .request(request)
                     .response(pkc)
@@ -169,8 +169,8 @@ public class WebAuthnAuthenticator {
 
             return credentialRegistrationResultMapper.fromRegistrationResult(result, request.getUser(), pkc.getResponse());
 
-        } catch (RegistrationFailedException e) {
-            throw new CredentialRegistrationFailedException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CredentialRegistrationFailedException("Failed to finish registration", e);
         }
     }
 
