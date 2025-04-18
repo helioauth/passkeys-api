@@ -25,7 +25,7 @@ import com.helioauth.passkeys.api.generated.models.ListPasskeysResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishRequest;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
-import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper; // Import mapper
+import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
@@ -72,7 +72,7 @@ class UserCredentialManagerTest {
     @Spy
     private UserCredentialMapper userCredentialMapper = Mappers.getMapper(UserCredentialMapper.class);
 
-    @Spy // Use Spy for the mapper
+    @Spy
     private RegistrationResponseMapper registrationResponseMapper = Mappers.getMapper(RegistrationResponseMapper.class);
 
     @InjectMocks
@@ -124,7 +124,6 @@ class UserCredentialManagerTest {
         String userName = "testUser";
         AssertionStartResult startResult = new AssertionStartResult("requestId", "{\"key\":\"value\"}"); // Renamed variable
         when(authenticator.startRegistration(userName)).thenReturn(startResult);
-        // No need to stub the spy mapper unless overriding specific behavior
 
         // Act
         SignUpStartResponse response = userCredentialManager.createCredential(userName);
