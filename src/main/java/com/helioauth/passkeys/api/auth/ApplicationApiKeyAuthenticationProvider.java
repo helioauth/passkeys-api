@@ -47,8 +47,8 @@ public class ApplicationApiKeyAuthenticationProvider implements AuthenticationPr
             .orElseThrow(() -> new BadCredentialsException("Invalid api key"));
 
         PreAuthenticatedAuthenticationToken authenticatedToken = new PreAuthenticatedAuthenticationToken(
-            clientApp.getId(),
             clientApp,
+            clientApp.getApiKey(),
             List.of(new SimpleGrantedAuthority("ROLE_APPLICATION"))
         );
         authenticatedToken.setDetails(clientApp);
