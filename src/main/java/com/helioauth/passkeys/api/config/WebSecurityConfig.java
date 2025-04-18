@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -38,6 +37,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.helioauth.passkeys.api.domain.ClientApplication;
+
 
 /**
  * @author Viktor Stanchev
@@ -57,7 +62,7 @@ public class WebSecurityConfig {
                                           RequestHeaderAuthenticationFilter applicationApiKeyAuthFilter) throws Exception {
 
         http
-            .cors(Customizer.withDefaults())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterAfter(adminAuthFilter, HeaderWriterFilter.class)
@@ -119,5 +124,32 @@ public class WebSecurityConfig {
 
     protected AuthenticationManager appApiKeyAuthenticationManager() {
         return new ProviderManager(List.of(applicationApiKeyAuthenticationProvider));
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        return _ -> {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !(authentication.getPrincipal() instanceof ClientApplication)) {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.applyPermitDefaultValues();
+                return configuration;
+            }
+
+            ClientApplication clientApplication = (ClientApplication) authentication.getPrincipal();
+            String allowedOrigins = clientApplication.getAllowedOrigins();
+
+            CorsConfiguration configuration = new CorsConfiguration();
+            if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
+                configuration.setAllowedOrigins(List.of(allowedOrigins.split(",")));
+                configuration.setAllowedMethods(List.of("*"));
+                configuration.setAllowedHeaders(List.of("*"));
+                configuration.setAllowCredentials(true);
+            } else {
+                configuration.applyPermitDefaultValues();
+            }
+
+            return configuration;
+        };
     }
 }

@@ -86,4 +86,7 @@ public class ClientApplication {
         this.name = name;
         this.apiKey = apiKey;
     }
+
+    @Column(name = "allowed_origins", nullable = true)
+    private String allowedOrigins;
 }
