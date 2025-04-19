@@ -77,9 +77,7 @@ public class ClientApplicationService {
     public Optional<Application> edit(UUID id, EditApplicationRequest request) {
         return repository.findById(id)
             .map(existing -> {
-                existing.setName(request.getName());
-                existing.setRelyingPartyHostname(request.getRelyingPartyHostname());
-                existing.setAllowedOrigins(request.getAllowedOrigins());
+                clientApplicationMapper.updateClientApplication(existing, request);
                 return clientApplicationMapper.toResponse(repository.save(existing));
             });
     }
