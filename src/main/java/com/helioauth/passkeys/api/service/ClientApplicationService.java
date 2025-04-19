@@ -68,7 +68,6 @@ public class ClientApplicationService {
                 .name(request.getName())
                 .apiKey(generateApiKey())
                 .relyingPartyHostname(request.getRelyingPartyHostname())
-                .allowedOrigins(request.getAllowedOrigins())
                 .build()
             )
         );

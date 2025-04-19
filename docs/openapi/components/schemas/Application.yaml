@@ -19,6 +19,3 @@ properties:
   relyingPartyHostname:
     type: string
     description: Hostname of the relying party.
-  allowedOrigins:
-    type: string
-    description: Allowed origins for the application.

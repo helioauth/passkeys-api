@@ -69,9 +69,6 @@ public class ClientApplication {
     @Column(name = "relying_party_hostname", nullable = true)
     private String relyingPartyHostname;
 
-    @Column(name = "allowed_origins", nullable = true)
-    private String allowedOrigins;
-
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)

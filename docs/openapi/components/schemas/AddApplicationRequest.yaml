@@ -7,6 +7,3 @@ properties:
   relyingPartyHostname:
     type: string
     description: Hostname of the application, e.g. example.com
-  allowedOrigins:
-    type: string
-    description: Allowed origins for the application, comma separated

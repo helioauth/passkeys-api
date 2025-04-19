@@ -18,15 +18,14 @@ package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
-import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties; // Added import
+import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
-import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.CredentialAssertionFailedException;
 import com.helioauth.passkeys.api.service.exception.CredentialRegistrationFailedException;
-import com.helioauth.passkeys.api.webauthn.DatabaseCredentialRepository; // Added import
+import com.helioauth.passkeys.api.webauthn.DatabaseCredentialRepository;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
@@ -44,11 +43,10 @@ import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
-import com.yubico.webauthn.data.RelyingPartyIdentity; // Added import
+import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.exception.AssertionFailedException;
-import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -71,8 +69,6 @@ public class WebAuthnAuthenticator {
     private final CredentialRegistrationResultMapper credentialRegistrationResultMapper;
     private final Cache<String, String> webAuthnRequestCache;
     private static final SecureRandom random = new SecureRandom();
-
-    private final RegistrationResponseMapper registrationResponseMapper;
 
     public AssertionStartResult startRegistration(String name) throws JsonProcessingException {
         ByteArray id = generateRandom();
