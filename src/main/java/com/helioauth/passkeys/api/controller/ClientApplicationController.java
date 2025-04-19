@@ -20,7 +20,10 @@ import com.helioauth.passkeys.api.generated.api.ApplicationsApi;
 import com.helioauth.passkeys.api.generated.models.AddApplicationRequest;
 import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
+import com.helioauth.passkeys.api.generated.models.EditApplicationRequest;
 import com.helioauth.passkeys.api.service.ClientApplicationService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +42,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ClientApplicationController implements ApplicationsApi {
 
-    private final ClientApplicationService clientApplicationService;
+ private final ClientApplicationService clientApplicationService;
 
-    public ResponseEntity<List<Application>> listAll() {
+ public ResponseEntity<List<Application>> listAll() {
         return ResponseEntity.ok(clientApplicationService.listAll());
     }
 
@@ -58,14 +61,14 @@ public class ClientApplicationController implements ApplicationsApi {
     }
 
     public ResponseEntity<Application> add(@RequestBody AddApplicationRequest request) {
-        Application created = clientApplicationService.add(request.getName());
+        Application created = clientApplicationService.add(request);
 
         return ResponseEntity.created(URI.create("/admin/v1/apps/" + created.getId()))
             .body(created);
     }
 
-    public ResponseEntity<Application> edit(@PathVariable UUID id, @RequestBody String name) {
-        val updated = clientApplicationService.edit(id, name);
+    public ResponseEntity<Application> edit(@PathVariable UUID id, @RequestBody @Valid EditApplicationRequest request) {
+        val updated = clientApplicationService.edit(id, request);
 
         return updated
             .map(ResponseEntity::ok)

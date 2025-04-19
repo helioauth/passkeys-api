@@ -18,13 +18,14 @@ package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
+import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
-import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.CredentialAssertionFailedException;
 import com.helioauth.passkeys.api.service.exception.CredentialRegistrationFailedException;
+import com.helioauth.passkeys.api.webauthn.DatabaseCredentialRepository;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
@@ -42,10 +43,10 @@ import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.exception.AssertionFailedException;
-import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -62,15 +63,12 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class WebAuthnAuthenticator {
 
-    private final RelyingParty relyingParty;
+    private final DatabaseCredentialRepository databaseCredentialRepository;
+    private final WebAuthnRelyingPartyProperties relyingPartyProperties;
 
     private final CredentialRegistrationResultMapper credentialRegistrationResultMapper;
-
     private final Cache<String, String> webAuthnRequestCache;
-
     private static final SecureRandom random = new SecureRandom();
-
-    private final RegistrationResponseMapper registrationResponseMapper;
 
     public AssertionStartResult startRegistration(String name) throws JsonProcessingException {
         ByteArray id = generateRandom();
@@ -78,6 +76,14 @@ public class WebAuthnAuthenticator {
     }
 
     public AssertionStartResult startRegistration(String name, ByteArray userId) throws JsonProcessingException {
+        return startRegistration(name, userId, relyingPartyProperties.getHostname());
+    }
+
+    public AssertionStartResult startRegistration(String name, ByteArray userId, String rpHostname) throws JsonProcessingException {
+        log.debug("Starting registration for user '{}' with id '{}' for RP '{}'", name, userId.getBase64Url(), rpHostname);
+
+        RelyingParty relyingParty = buildRelyingParty(rpHostname);
+
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
 
         PublicKeyCredentialCreationOptions request = relyingParty.startRegistration(StartRegistrationOptions.builder()
@@ -122,9 +128,14 @@ public class WebAuthnAuthenticator {
         PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
             PublicKeyCredential.parseRegistrationResponseJson(publicKeyCredentialJson);
 
-        try {
-            PublicKeyCredentialCreationOptions request = PublicKeyCredentialCreationOptions.fromJson(requestJson);
+        PublicKeyCredentialCreationOptions request = PublicKeyCredentialCreationOptions.fromJson(requestJson);
 
+        String rpId = request.getRp().getId();
+        log.debug("Finishing registration for request ID '{}' using RP ID '{}'", requestId, rpId);
+
+        RelyingParty relyingParty = buildRelyingParty(rpId);
+
+        try {
             RegistrationResult result = relyingParty.finishRegistration(FinishRegistrationOptions.builder()
                     .request(request)
                     .response(pkc)
@@ -132,12 +143,15 @@ public class WebAuthnAuthenticator {
 
             return credentialRegistrationResultMapper.fromRegistrationResult(result, request.getUser(), pkc.getResponse());
 
-        } catch (RegistrationFailedException e) {
-            throw new CredentialRegistrationFailedException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new CredentialRegistrationFailedException("Failed to finish registration", e);
         }
     }
 
     public AssertionStartResult startAssertion(String name) throws JsonProcessingException {
+        RelyingParty relyingParty = buildDefaultRelyingParty();
+        log.debug("Starting assertion for user '{}' using default RP ID '{}'", name, relyingParty.getIdentity().getId());
+
         AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
                 .username(name)
                 .build());
@@ -156,13 +170,16 @@ public class WebAuthnAuthenticator {
         }
         webAuthnRequestCache.invalidate(requestId);
 
+        RelyingParty relyingParty = buildDefaultRelyingParty();
+        log.debug("Finishing assertion for request ID '{}' using default RP ID '{}'", requestId, relyingParty.getIdentity().getId());
+
         try {
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc =
                     PublicKeyCredential.parseAssertionResponseJson(publicKeyCredentialJson);
 
             AssertionRequest request = AssertionRequest.fromJson(requestJson);
             AssertionResult result = relyingParty.finishAssertion(FinishAssertionOptions.builder()
-                    .request(request)  // The PublicKeyCredentialRequestOptions from startAssertion above
+                    .request(request)
                     .response(pkc)
                     .build());
 
@@ -188,7 +205,24 @@ public class WebAuthnAuthenticator {
         throw new CredentialAssertionFailedException();
     }
 
-    private static ByteArray generateRandom() {
+    private RelyingParty buildRelyingParty(String rpHostname) {
+        RelyingPartyIdentity rpIdentity = RelyingPartyIdentity.builder()
+                .id(rpHostname)
+                .name(relyingPartyProperties.getDisplayName())
+                .build();
+
+        return RelyingParty.builder()
+                .identity(rpIdentity)
+                .credentialRepository(databaseCredentialRepository)
+                .allowOriginPort(relyingPartyProperties.isAllowOriginPort())
+                .build();
+    }
+
+    private RelyingParty buildDefaultRelyingParty() {
+        return buildRelyingParty(relyingPartyProperties.getHostname());
+    }
+
+    public static ByteArray generateRandom() {
         byte[] bytes = new byte[32];
         random.nextBytes(bytes);
         return new ByteArray(bytes);

@@ -50,8 +50,8 @@ public class ApplicationIdAuthenticationProvider implements AuthenticationProvid
                 .orElseThrow(() -> new BadCredentialsException("Invalid application ID"));
             
             PreAuthenticatedAuthenticationToken authenticatedToken = new PreAuthenticatedAuthenticationToken(
-                clientApp.getId(),
                 clientApp,
+                clientApp.getId(),
                 List.of(new SimpleGrantedAuthority("ROLE_FRONTEND_APPLICATION"))
             );
             authenticatedToken.setDetails(clientApp);

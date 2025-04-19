@@ -1,0 +1,9 @@
+type: object
+description: Represents a request to edit an application.
+properties:
+  name:
+    type: string
+    description: Name of the application.
+  relyingPartyHostname:
+    type: string
+    description: Hostname of the relying party.

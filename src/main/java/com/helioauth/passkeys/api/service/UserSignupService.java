@@ -28,6 +28,7 @@ import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import com.helioauth.passkeys.api.service.exception.UsernameAlreadyRegisteredException;
+import com.yubico.webauthn.data.ByteArray;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,13 +50,19 @@ public class UserSignupService {
     private final UserCredentialMapper userCredentialMapper;
     private final RegistrationResponseMapper registrationResponseMapper;
 
-    public SignUpStartResponse startRegistration(String name) {
+    public SignUpStartResponse startRegistration(String name, String rpId) {
+        if (userRepository.findByName(name).isPresent()) {
+            log.warn("Attempted to start registration for already existing username: {}", name);
+            throw new UsernameAlreadyRegisteredException();
+        }
+
         try {
+            ByteArray userId = WebAuthnAuthenticator.generateRandom();
             return registrationResponseMapper.toSignUpStartResponse(
-                webAuthnAuthenticator.startRegistration(name)
+                webAuthnAuthenticator.startRegistration(name, userId, rpId)
             );
         } catch (JsonProcessingException e) {
-            log.error("Register Credential failed", e);
+            log.error("Register Credential failed for user '{}' and rpId '{}'", name, rpId, e);
             throw new SignUpFailedException();
         }
     }

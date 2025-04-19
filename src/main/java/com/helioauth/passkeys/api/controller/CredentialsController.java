@@ -17,6 +17,7 @@
 package com.helioauth.passkeys.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.generated.api.SignInApi;
 import com.helioauth.passkeys.api.generated.api.SignUpApi;
 import com.helioauth.passkeys.api.generated.models.SignInFinishRequest;
@@ -34,6 +35,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,16 +49,29 @@ import jakarta.validation.Valid;
  */
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class CredentialsController implements SignUpApi, SignInApi {
 
     private final UserSignInService userSignInService;
     private final UserSignupService userSignupService;
 
     public ResponseEntity<SignUpStartResponse> postSignupStart(@RequestBody @Valid SignUpStartRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof ClientApplication clientApp)) {
+            log.error("Signup start request received without valid ClientApplication authentication.");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Client application not authenticated");
+        }
+
+        String rpId = clientApp.getRelyingPartyHostname();
+
+        if (rpId == null || rpId.isBlank()) {
+             log.error("Authenticated ClientApplication (ID: {}) is missing a valid relyingPartyHostname.", clientApp.getId());
+             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Client application configuration error: Missing RP hostname");
+        }
+
         return ResponseEntity.ok(
-            userSignupService.startRegistration(request.getName())
+            userSignupService.startRegistration(request.getName(), rpId)
         );
     }
 
