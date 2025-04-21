@@ -51,6 +51,10 @@ public class UserSignupService {
     private final RegistrationResponseMapper registrationResponseMapper;
 
     public SignUpStartResponse startRegistration(String name, String rpId) {
+        return startRegistration(name, rpId, null);
+    }
+
+    public SignUpStartResponse startRegistration(String name, String rpId, String rpName) {
         if (userRepository.findByName(name).isPresent()) {
             log.warn("Attempted to start registration for already existing username: {}", name);
             throw new UsernameAlreadyRegisteredException();
@@ -59,10 +63,10 @@ public class UserSignupService {
         try {
             ByteArray userId = WebAuthnAuthenticator.generateRandom();
             return registrationResponseMapper.toSignUpStartResponse(
-                webAuthnAuthenticator.startRegistration(name, userId, rpId)
+                webAuthnAuthenticator.startRegistration(name, userId, rpId, rpName)
             );
         } catch (JsonProcessingException e) {
-            log.error("Register Credential failed for user '{}' and rpId '{}'", name, rpId, e);
+            log.error("Register Credential failed for user '{}' and rpId '{}' with name '{}'", name, rpId, rpName, e);
             throw new SignUpFailedException();
         }
     }

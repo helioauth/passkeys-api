@@ -80,9 +80,13 @@ public class WebAuthnAuthenticator {
     }
 
     public AssertionStartResult startRegistration(String name, ByteArray userId, String rpHostname) throws JsonProcessingException {
-        log.debug("Starting registration for user '{}' with id '{}' for RP '{}'", name, userId.getBase64Url(), rpHostname);
+        return startRegistration(name, userId, rpHostname, null);
+    }
 
-        RelyingParty relyingParty = buildRelyingParty(rpHostname);
+    public AssertionStartResult startRegistration(String name, ByteArray userId, String rpHostname, String rpName) throws JsonProcessingException {
+        log.debug("Starting registration for user '{}' with id '{}' for RP '{}' with name '{}'", name, userId.getBase64Url(), rpHostname, rpName);
+
+        RelyingParty relyingParty = buildRelyingParty(rpHostname, rpName);
 
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
 
@@ -206,9 +210,13 @@ public class WebAuthnAuthenticator {
     }
 
     private RelyingParty buildRelyingParty(String rpHostname) {
+        return buildRelyingParty(rpHostname, null);
+    }
+
+    private RelyingParty buildRelyingParty(String rpHostname, String rpName) {
         RelyingPartyIdentity rpIdentity = RelyingPartyIdentity.builder()
                 .id(rpHostname)
-                .name(relyingPartyProperties.getDisplayName())
+                .name(rpName != null ? rpName : relyingPartyProperties.getDisplayName())
                 .build();
 
         return RelyingParty.builder()

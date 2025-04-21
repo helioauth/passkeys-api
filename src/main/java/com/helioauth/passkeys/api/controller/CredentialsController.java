@@ -64,6 +64,7 @@ public class CredentialsController implements SignUpApi, SignInApi {
         }
 
         String rpId = clientApp.getRelyingPartyHostname();
+        String rpName = clientApp.getRelyingPartyName();
 
         if (rpId == null || rpId.isBlank()) {
              log.error("Authenticated ClientApplication (ID: {}) is missing a valid relyingPartyHostname.", clientApp.getId());
@@ -71,7 +72,7 @@ public class CredentialsController implements SignUpApi, SignInApi {
         }
 
         return ResponseEntity.ok(
-            userSignupService.startRegistration(request.getName(), rpId)
+            userSignupService.startRegistration(request.getName(), rpId, rpName)
         );
     }
 
