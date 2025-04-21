@@ -42,13 +42,13 @@ class UserSignupServiceTest {
 
     @Mock
     private WebAuthnAuthenticator webAuthnAuthenticator;
-    
+
     @Mock
     private UserRepository userRepository;
-    
+
     @Mock
     private UserCredentialRepository userCredentialRepository;
-    
+
     @Spy
     private UserCredentialMapper userCredentialMapper = Mappers.getMapper(UserCredentialMapper.class);
 
@@ -66,7 +66,7 @@ class UserSignupServiceTest {
         AssertionStartResult mockAssertionResult = new AssertionStartResult("requestId123", "{\"options\":\"value\"}");
         SignUpStartResponse mockMappedResponse = new SignUpStartResponse("requestId123", "{\"options\":\"value\"}");
 
-        when(webAuthnAuthenticator.startRegistration(eq(name), any(ByteArray.class), eq(rpId)))
+        when(webAuthnAuthenticator.startRegistration(eq(name), any(ByteArray.class), eq(rpId), eq(null)))
             .thenReturn(mockAssertionResult);
         when(registrationResponseMapper.toSignUpStartResponse(mockAssertionResult))
             .thenReturn(mockMappedResponse);
@@ -79,7 +79,7 @@ class UserSignupServiceTest {
         assertNotNull(response);
         assertEquals("requestId123", response.getRequestId());
         assertEquals("{\"options\":\"value\"}", response.getOptions());
-        verify(webAuthnAuthenticator, times(1)).startRegistration(eq(name), any(ByteArray.class), eq(rpId));
+        verify(webAuthnAuthenticator, times(1)).startRegistration(eq(name), any(ByteArray.class), eq(rpId), eq(null));
         verify(registrationResponseMapper, times(1)).toSignUpStartResponse(mockAssertionResult);
     }
 
@@ -88,7 +88,7 @@ class UserSignupServiceTest {
         // Arrange
         String name = "testuser";
         String rpId = "test-rp.com";
-        when(webAuthnAuthenticator.startRegistration(eq(name), any(ByteArray.class), eq(rpId)))
+        when(webAuthnAuthenticator.startRegistration(eq(name), any(ByteArray.class), eq(rpId), eq(null)))
             .thenThrow(JsonProcessingException.class);
 
         // Act & Assert
@@ -110,7 +110,7 @@ class UserSignupServiceTest {
             "", "","",
             true, true, true
         );
-        
+
         User mockUser = User.builder()
             .id(UUID.randomUUID())
             .name(username)
