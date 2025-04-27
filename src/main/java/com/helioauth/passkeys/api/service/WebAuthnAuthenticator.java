@@ -23,6 +23,7 @@ import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
 import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
+import com.helioauth.passkeys.api.service.dto.RegistrationStartRequest;
 import com.helioauth.passkeys.api.service.exception.CredentialAssertionFailedException;
 import com.helioauth.passkeys.api.service.exception.CredentialRegistrationFailedException;
 import com.helioauth.passkeys.api.webauthn.DatabaseCredentialRepository;
@@ -70,27 +71,19 @@ public class WebAuthnAuthenticator {
     private final Cache<String, String> webAuthnRequestCache;
     private static final SecureRandom random = new SecureRandom();
 
-    public AssertionStartResult startRegistration(String name) throws JsonProcessingException {
-        ByteArray id = generateRandom();
-        return startRegistration(name, id);
-    }
+    public AssertionStartResult startRegistration(RegistrationStartRequest request) throws JsonProcessingException {
+        String name = request.getName();
+        ByteArray userId = request.getUserId() != null ? request.getUserId() : generateRandom();
+        String rpHostname = request.getRpHostname() != null ? request.getRpHostname() : relyingPartyProperties.getHostname();
+        String rpName = request.getRpName();
 
-    public AssertionStartResult startRegistration(String name, ByteArray userId) throws JsonProcessingException {
-        return startRegistration(name, userId, relyingPartyProperties.getHostname());
-    }
-
-    public AssertionStartResult startRegistration(String name, ByteArray userId, String rpHostname) throws JsonProcessingException {
-        return startRegistration(name, userId, rpHostname, null);
-    }
-
-    public AssertionStartResult startRegistration(String name, ByteArray userId, String rpHostname, String rpName) throws JsonProcessingException {
         log.debug("Starting registration for user '{}' with id '{}' for RP '{}' with name '{}'", name, userId.getBase64Url(), rpHostname, rpName);
 
         RelyingParty relyingParty = buildRelyingParty(rpHostname, rpName);
 
         ResidentKeyRequirement residentKeyRequirement = ResidentKeyRequirement.PREFERRED;
 
-        PublicKeyCredentialCreationOptions request = relyingParty.startRegistration(StartRegistrationOptions.builder()
+        PublicKeyCredentialCreationOptions creationOptions = relyingParty.startRegistration(StartRegistrationOptions.builder()
             .user(
                 UserIdentity.builder()
                     .name(name)
@@ -107,9 +100,9 @@ public class WebAuthnAuthenticator {
         );
 
         String requestId = generateRandom().getHex();
-        webAuthnRequestCache.put(requestId, request.toJson());
+        webAuthnRequestCache.put(requestId, creationOptions.toJson());
 
-        return new AssertionStartResult(requestId, request.toCredentialsCreateJson());
+        return new AssertionStartResult(requestId, creationOptions.toCredentialsCreateJson());
     }
 
     public String getUsernameByRequestId(String requestId) throws IOException {

@@ -26,6 +26,7 @@ import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
+import com.helioauth.passkeys.api.service.dto.RegistrationStartRequest;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import com.helioauth.passkeys.api.service.exception.UsernameAlreadyRegisteredException;
 import com.yubico.webauthn.data.ByteArray;
@@ -63,7 +64,14 @@ public class UserSignupService {
         try {
             ByteArray userId = WebAuthnAuthenticator.generateRandom();
             return registrationResponseMapper.toSignUpStartResponse(
-                webAuthnAuthenticator.startRegistration(name, userId, rpId, rpName)
+                webAuthnAuthenticator.startRegistration(
+                    RegistrationStartRequest.builder()
+                        .name(name)
+                        .userId(userId)
+                        .rpHostname(rpId)
+                        .rpName(rpName)
+                        .build()
+                )
             );
         } catch (JsonProcessingException e) {
             log.error("Register Credential failed for user '{}' and rpId '{}' with name '{}'", name, rpId, rpName, e);
