@@ -30,6 +30,7 @@ import com.helioauth.passkeys.api.generated.models.SignUpStartRequest;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
 import com.helioauth.passkeys.api.service.UserSignInService;
 import com.helioauth.passkeys.api.service.UserSignupService;
+import com.helioauth.passkeys.api.service.dto.UserSignupStartRequest;
 import com.helioauth.passkeys.api.service.exception.SignInFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +73,12 @@ public class CredentialsController implements SignUpApi, SignInApi {
         }
 
         return ResponseEntity.ok(
-            userSignupService.startRegistration(request.getName(), rpId, rpName)
+            userSignupService.startRegistration(UserSignupStartRequest.builder()
+                .name(request.getName())
+                .rpId(rpId)
+                .rpName(rpName)
+                .build()
+            )
         );
     }
 

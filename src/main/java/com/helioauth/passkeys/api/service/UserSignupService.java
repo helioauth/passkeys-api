@@ -27,6 +27,7 @@ import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
 import com.helioauth.passkeys.api.service.dto.RegistrationStartRequest;
+import com.helioauth.passkeys.api.service.dto.UserSignupStartRequest;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import com.helioauth.passkeys.api.service.exception.UsernameAlreadyRegisteredException;
 import com.yubico.webauthn.data.ByteArray;
@@ -51,11 +52,11 @@ public class UserSignupService {
     private final UserCredentialMapper userCredentialMapper;
     private final RegistrationResponseMapper registrationResponseMapper;
 
-    public SignUpStartResponse startRegistration(String name, String rpId) {
-        return startRegistration(name, rpId, null);
-    }
+    public SignUpStartResponse startRegistration(UserSignupStartRequest request) {
+        String name = request.getName();
+        String rpId = request.getRpId();
+        String rpName = request.getRpName();
 
-    public SignUpStartResponse startRegistration(String name, String rpId, String rpName) {
         if (userRepository.findByName(name).isPresent()) {
             log.warn("Attempted to start registration for already existing username: {}", name);
             throw new UsernameAlreadyRegisteredException();
