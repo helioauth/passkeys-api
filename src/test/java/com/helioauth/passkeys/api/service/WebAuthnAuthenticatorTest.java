@@ -18,19 +18,20 @@ package com.helioauth.passkeys.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
+import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import com.helioauth.passkeys.api.mapper.CredentialRegistrationResultMapper;
+import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
+import com.helioauth.passkeys.api.service.dto.RegistrationStartRequest;
 import com.helioauth.passkeys.api.service.exception.CredentialRegistrationFailedException;
-import com.yubico.webauthn.RegistrationResult;
-import com.yubico.webauthn.data.ByteArray;
 import com.helioauth.passkeys.api.webauthn.DatabaseCredentialRepository;
-import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
+import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
+import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.exception.HexException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
-import com.helioauth.passkeys.api.config.properties.WebAuthnRelyingPartyProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -58,7 +60,7 @@ public class WebAuthnAuthenticatorTest {
 
     private static final String TEST_USER_NAME = "test3";
     private static final ByteArray TEST_USER_ID = new ByteArray(new byte[]{1, 2, 3});
-    private static final String TEST_RP_ID = "localhost";
+    private static final String TEST_RP_HOSTNAME = "localhost";
     private static final String TEST_RP_NAME = "Test RP";
     private static final UserIdentity USER_IDENTITY = UserIdentity.builder()
         .name(TEST_USER_NAME)
@@ -121,33 +123,39 @@ public class WebAuthnAuthenticatorTest {
 
     @BeforeEach
     void setUp() {
-        relyingPartyProperties.setHostname(TEST_RP_ID);
+        relyingPartyProperties.setHostname(TEST_RP_HOSTNAME);
         relyingPartyProperties.setDisplayName(TEST_RP_NAME);
         relyingPartyProperties.setAllowOriginPort(true);
     }
 
     @Test
     public void testStartRegistrationWithNameAndUserId() throws JsonProcessingException, HexException {
-        AssertionStartResult response = authenticator.startRegistration(TEST_USER_NAME, TEST_USER_ID, TEST_RP_ID);
+        AssertionStartResult response = authenticator.startRegistration(
+            RegistrationStartRequest.builder()
+                .name(TEST_USER_NAME)
+                .userId(TEST_USER_ID)
+                .rpHostname(TEST_RP_HOSTNAME)
+                .build()
+        );
 
         verify(webAuthnRequestCache, times(1)).put(anyString(), anyString());
         assertNotNull(response);
         assertNotNull(response.requestId());
         assertNotNull(response.options());
 
-        assertTrue(response.options().contains("\"id\":\"" + TEST_RP_ID + "\""));
+        assertTrue(response.options().contains("\"id\":\"" + TEST_RP_HOSTNAME + "\""));
         assertTrue(response.options().contains("\"name\":\"" + TEST_RP_NAME + "\""));
     }
 
     @Test
     public void testStartRegistrationWithName() throws JsonProcessingException, HexException {
-        AssertionStartResult response = authenticator.startRegistration(TEST_USER_NAME);
+        AssertionStartResult response = authenticator.startRegistration(RegistrationStartRequest.withName(TEST_USER_NAME).build());
 
         verify(webAuthnRequestCache, times(1)).put(anyString(), anyString());
         assertNotNull(response);
         assertNotNull(response.requestId());
         assertNotNull(response.options());
-        assertTrue(response.options().contains("\"id\":\"" + TEST_RP_ID + "\""));
+        assertTrue(response.options().contains("\"id\":\"" + TEST_RP_HOSTNAME + "\""));
         assertTrue(response.options().contains("\"name\":\"" + TEST_RP_NAME + "\""));
     }
 

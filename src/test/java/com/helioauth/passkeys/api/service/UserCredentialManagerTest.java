@@ -29,6 +29,7 @@ import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
+import com.helioauth.passkeys.api.service.dto.RegistrationStartRequest;
 import com.helioauth.passkeys.api.service.exception.CreateCredentialFailedException;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import org.junit.jupiter.api.Test;
@@ -123,7 +124,7 @@ class UserCredentialManagerTest {
         // Arrange
         String userName = "testUser";
         AssertionStartResult startResult = new AssertionStartResult("requestId", "{\"key\":\"value\"}"); // Renamed variable
-        when(authenticator.startRegistration(userName)).thenReturn(startResult);
+        when(authenticator.startRegistration(any(RegistrationStartRequest.class))).thenReturn(startResult);
 
         // Act
         SignUpStartResponse response = userCredentialManager.createCredential(userName);
@@ -139,7 +140,7 @@ class UserCredentialManagerTest {
     void createCredential_throwsException_whenJsonProcessingExceptionOccurs() throws JsonProcessingException {
         // Arrange
         String userName = "testUser";
-        when(authenticator.startRegistration(userName)).thenThrow(JsonProcessingException.class);
+        when(authenticator.startRegistration(any(RegistrationStartRequest.class))).thenThrow(JsonProcessingException.class);
 
         // Act & Assert
         assertThrows(CreateCredentialFailedException.class, () -> userCredentialManager.createCredential(userName));
