@@ -11,9 +11,10 @@ import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
+import com.helioauth.passkeys.api.service.dto.RegistrationStartRequest;
+import com.helioauth.passkeys.api.service.dto.UserSignupStartRequest;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import com.helioauth.passkeys.api.service.exception.UsernameAlreadyRegisteredException;
-import com.yubico.webauthn.data.ByteArray;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -31,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,20 +66,22 @@ class UserSignupServiceTest {
         AssertionStartResult mockAssertionResult = new AssertionStartResult("requestId123", "{\"options\":\"value\"}");
         SignUpStartResponse mockMappedResponse = new SignUpStartResponse("requestId123", "{\"options\":\"value\"}");
 
-        when(webAuthnAuthenticator.startRegistration(eq(name), any(ByteArray.class), eq(rpId), eq(null)))
+        when(webAuthnAuthenticator.startRegistration(any(RegistrationStartRequest.class)))
             .thenReturn(mockAssertionResult);
         when(registrationResponseMapper.toSignUpStartResponse(mockAssertionResult))
             .thenReturn(mockMappedResponse);
 
 
         // Act
-        SignUpStartResponse response = userSignupService.startRegistration(name, rpId);
+        SignUpStartResponse response = userSignupService.startRegistration(
+            UserSignupStartRequest.withNameAndRpId(name, rpId).build()
+        );
 
         // Assert
         assertNotNull(response);
         assertEquals("requestId123", response.getRequestId());
         assertEquals("{\"options\":\"value\"}", response.getOptions());
-        verify(webAuthnAuthenticator, times(1)).startRegistration(eq(name), any(ByteArray.class), eq(rpId), eq(null));
+        verify(webAuthnAuthenticator, times(1)).startRegistration(any(RegistrationStartRequest.class));
         verify(registrationResponseMapper, times(1)).toSignUpStartResponse(mockAssertionResult);
     }
 
@@ -88,11 +90,13 @@ class UserSignupServiceTest {
         // Arrange
         String name = "testuser";
         String rpId = "test-rp.com";
-        when(webAuthnAuthenticator.startRegistration(eq(name), any(ByteArray.class), eq(rpId), eq(null)))
+        when(webAuthnAuthenticator.startRegistration(any(RegistrationStartRequest.class)))
             .thenThrow(JsonProcessingException.class);
 
         // Act & Assert
-        assertThrows(SignUpFailedException.class, () -> userSignupService.startRegistration(name, rpId));
+        assertThrows(SignUpFailedException.class, () -> userSignupService.startRegistration(
+            UserSignupStartRequest.withNameAndRpId(name, rpId).build()
+        ));
         verify(registrationResponseMapper, never()).toSignUpStartResponse(any());
     }
 
