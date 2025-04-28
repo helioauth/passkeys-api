@@ -63,6 +63,12 @@ public class ClientApplication {
     @Column(name = "api_key", nullable = false)
     private String apiKey;
 
+    @Column(name = "relying_party_name", nullable = true)
+    private String relyingPartyName;
+
+    @Column(name = "relying_party_hostname", nullable = true)
+    private String relyingPartyHostname;
+
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)

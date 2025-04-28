@@ -25,9 +25,11 @@ import com.helioauth.passkeys.api.generated.models.ListPasskeysResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishRequest;
 import com.helioauth.passkeys.api.generated.models.SignUpFinishResponse;
 import com.helioauth.passkeys.api.generated.models.SignUpStartResponse;
+import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.mapper.UserCredentialMapper;
 import com.helioauth.passkeys.api.service.dto.AssertionStartResult;
 import com.helioauth.passkeys.api.service.dto.CredentialRegistrationResult;
+import com.helioauth.passkeys.api.service.dto.RegistrationStartRequest;
 import com.helioauth.passkeys.api.service.exception.CreateCredentialFailedException;
 import com.helioauth.passkeys.api.service.exception.SignUpFailedException;
 import org.junit.jupiter.api.Test;
@@ -70,6 +72,9 @@ class UserCredentialManagerTest {
 
     @Spy
     private UserCredentialMapper userCredentialMapper = Mappers.getMapper(UserCredentialMapper.class);
+
+    @Spy
+    private RegistrationResponseMapper registrationResponseMapper = Mappers.getMapper(RegistrationResponseMapper.class);
 
     @InjectMocks
     private UserCredentialManager userCredentialManager;
@@ -118,23 +123,24 @@ class UserCredentialManagerTest {
     void createCredential_returnsResponse_whenSuccessful() throws JsonProcessingException {
         // Arrange
         String userName = "testUser";
-        AssertionStartResult expectedResponse = new AssertionStartResult("requestId", "{\"key\":\"value\"}");
-        when(authenticator.startRegistration(userName)).thenReturn(expectedResponse);
+        AssertionStartResult startResult = new AssertionStartResult("requestId", "{\"key\":\"value\"}"); // Renamed variable
+        when(authenticator.startRegistration(any(RegistrationStartRequest.class))).thenReturn(startResult);
 
         // Act
         SignUpStartResponse response = userCredentialManager.createCredential(userName);
 
         // Assert
         assertNotNull(response);
-        assertEquals("requestId", response.getRequestId());
-        assertEquals("{\"key\":\"value\"}", response.getOptions());
+        // Assert based on the real mapping logic from AssertionStartResult
+        assertEquals(startResult.requestId(), response.getRequestId());
+        assertEquals(startResult.options(), response.getOptions());
     }
 
     @Test
     void createCredential_throwsException_whenJsonProcessingExceptionOccurs() throws JsonProcessingException {
         // Arrange
         String userName = "testUser";
-        when(authenticator.startRegistration(userName)).thenThrow(JsonProcessingException.class);
+        when(authenticator.startRegistration(any(RegistrationStartRequest.class))).thenThrow(JsonProcessingException.class);
 
         // Act & Assert
         assertThrows(CreateCredentialFailedException.class, () -> userCredentialManager.createCredential(userName));

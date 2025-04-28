@@ -19,8 +19,10 @@ package com.helioauth.passkeys.api.mapper;
 import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
+import com.helioauth.passkeys.api.generated.models.EditApplicationRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -33,4 +35,6 @@ public interface ClientApplicationMapper {
     List<Application> toResponse(List<ClientApplication> clientApplication);
 
     ApplicationApiKey toApiKeyResponse(ClientApplication clientApplication);
+
+    void updateClientApplication(@MappingTarget ClientApplication clientApplication, EditApplicationRequest request);
 }

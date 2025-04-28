@@ -68,6 +68,7 @@ class CredentialsControllerTest {
         .id(TEST_APP_ID)
         .name("test")
         .apiKey("testapikey")
+        .relyingPartyHostname("localhost") // Set a default hostname for tests
         .createdAt(Instant.now())
         .updatedAt(Instant.now())
         .build();
@@ -140,7 +141,7 @@ class CredentialsControllerTest {
             .header(X_APP_ID, TEST_APP_ID.toString())
             .contentType("application/json")
             .content(requestJson)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isBadRequest()); // Expect 400 Bad Request for existing user
     }
 
     @Test

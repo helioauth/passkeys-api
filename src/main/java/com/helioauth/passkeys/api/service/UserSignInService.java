@@ -22,6 +22,7 @@ import com.helioauth.passkeys.api.domain.UserRepository;
 import com.helioauth.passkeys.api.generated.models.SignInStartResponse;
 import com.helioauth.passkeys.api.mapper.RegistrationResponseMapper;
 import com.helioauth.passkeys.api.service.dto.CredentialAssertionResult;
+import com.helioauth.passkeys.api.service.dto.RegistrationStartRequest;
 import com.helioauth.passkeys.api.service.exception.SignInFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,9 @@ public class UserSignInService {
     public SignInStartResponse startAssertion(String name) throws JsonProcessingException {
         if (!StringUtils.isBlank(name) && userRepository.findByName(name).isEmpty()) {
             return registrationResponseMapper.toSignInStartResponse(
-                webAuthnAuthenticator.startRegistration(name),
+                webAuthnAuthenticator.startRegistration(
+                    RegistrationStartRequest.withName(name).build()
+                ),
                 false
             );
         }

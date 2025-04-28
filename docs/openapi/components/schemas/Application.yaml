@@ -16,3 +16,6 @@ properties:
     type: string
     format: date-time
     description: Timestamp when the application was last updated.
+  relyingPartyHostname:
+    type: string
+    description: Hostname of the relying party.
