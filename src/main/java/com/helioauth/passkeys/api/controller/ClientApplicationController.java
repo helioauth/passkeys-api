@@ -22,8 +22,6 @@ import com.helioauth.passkeys.api.generated.models.Application;
 import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
 import com.helioauth.passkeys.api.generated.models.EditApplicationRequest;
 import com.helioauth.passkeys.api.service.ClientApplicationService;
-
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
@@ -78,6 +77,11 @@ public class ClientApplicationController implements ApplicationsApi {
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         boolean deleted = clientApplicationService.delete(id);
 
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    public ResponseEntity<Void> deleteApiKey(@PathVariable UUID id) {
+        boolean deleted = clientApplicationService.deleteApiKey(id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

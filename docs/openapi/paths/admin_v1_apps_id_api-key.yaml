@@ -24,3 +24,26 @@ get:
       description: Not Found
   security:
     - admin-api: []
+
+delete:
+  tags:
+    - Applications
+  summary: Delete an application's API key
+  description: Deletes the API key for a specific application by its ID.
+  operationId: deleteApiKey
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    '204':
+      description: No Content
+    '401':
+      description: Unauthorized
+    '404':
+      description: Not Found
+  security:
+    - admin-api: []
