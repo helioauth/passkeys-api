@@ -51,6 +51,8 @@ public class ClientApplicationServiceTest {
     public static final Application DTO = new Application()
         .id(UUID.randomUUID())
         .name("App Name")
+        .relyingPartyHostname("example.com")
+        .relyingPartyName("Example App")
         .createdAt(Instant.now())
         .updatedAt(Instant.now());
 
@@ -79,6 +81,8 @@ public class ClientApplicationServiceTest {
         // Execute
         AddApplicationRequest addApplicationRequest = new AddApplicationRequest();
         addApplicationRequest.setName(DTO.getName());
+        addApplicationRequest.setRelyingPartyHostname(DTO.getRelyingPartyHostname());
+        addApplicationRequest.setRelyingPartyName(DTO.getRelyingPartyName());
         Application result = service.add(addApplicationRequest);
 
         // Capture the argument
@@ -89,6 +93,8 @@ public class ClientApplicationServiceTest {
         assertFalse(savedClientApplication.getApiKey().isEmpty());
         assertEquals(DTO.getName(), savedClientApplication.getName());
         assertEquals(DTO.getName(), result.getName());
+        assertEquals(DTO.getRelyingPartyHostname(), savedClientApplication.getRelyingPartyHostname());
+        assertEquals(DTO.getRelyingPartyName(), savedClientApplication.getRelyingPartyName());
     }
 
     @Test
@@ -103,8 +109,8 @@ public class ClientApplicationServiceTest {
         // Validate
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(DTO.getId(), result.get(0).getId());
-        assertEquals(DTO.getName(), result.get(0).getName());
+        assertEquals(DTO.getId(), result.getFirst().getId());
+        assertEquals(DTO.getName(), result.getFirst().getName());
     }
 
     @Test
@@ -115,6 +121,8 @@ public class ClientApplicationServiceTest {
         ClientApplication existingClientApplication = ClientApplication.builder()
             .id(id)
             .name("Old Name")
+            .relyingPartyHostname("example.com")
+            .relyingPartyName("Example RP")
             .createdAt(Instant.now())
             .updatedAt(Instant.now())
             .build();
@@ -125,11 +133,15 @@ public class ClientApplicationServiceTest {
         // Execute
         EditApplicationRequest editApplicationRequest = new EditApplicationRequest();
         editApplicationRequest.setName(newName);
+        editApplicationRequest.setRelyingPartyHostname("example2.com");
+        editApplicationRequest.setRelyingPartyName("Example RP 2");
         Optional<Application> result = service.edit(id, editApplicationRequest);
 
         // Validate
         assertTrue(result.isPresent());
         assertEquals(newName, result.get().getName());
+        assertEquals(editApplicationRequest.getRelyingPartyHostname(), result.get().getRelyingPartyHostname());
+        assertEquals(editApplicationRequest.getRelyingPartyName(), result.get().getRelyingPartyName());
     }
 
     @Test

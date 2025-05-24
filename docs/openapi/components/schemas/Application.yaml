@@ -7,7 +7,7 @@ properties:
     description: Unique identifier for the application.
   name:
     type: string
-    description: Name of the application.
+    description: Name of the application. Used internally.
   createdAt:
     type: string
     format: date-time
@@ -19,3 +19,6 @@ properties:
   relyingPartyHostname:
     type: string
     description: Hostname of the relying party.
+  relyingPartyName:
+    type: string
+    description: Name of the relying party presented to clients.

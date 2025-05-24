@@ -24,6 +24,7 @@ import com.helioauth.passkeys.api.generated.models.ApplicationApiKey;
 import com.helioauth.passkeys.api.generated.models.EditApplicationRequest;
 import com.helioauth.passkeys.api.mapper.ClientApplicationMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,14 +63,11 @@ public class ClientApplicationService {
     }
 
     public Application add(AddApplicationRequest request) {
+        val clientApplication = clientApplicationMapper.toClientApplication(request);
+        clientApplication.setApiKey(generateApiKey());
+
         return clientApplicationMapper.toResponse(
-            repository.save(
-                ClientApplication.builder()
-                .name(request.getName())
-                .apiKey(generateApiKey())
-                .relyingPartyHostname(request.getRelyingPartyHostname())
-                .build()
-            )
+            repository.save(clientApplication)
         );
     }
 

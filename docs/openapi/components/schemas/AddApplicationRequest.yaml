@@ -7,3 +7,6 @@ properties:
   relyingPartyHostname:
     type: string
     description: Hostname of the application, e.g. example.com
+  relyingPartyName:
+    type: string
+    description: Name of the relying party presented to clients.
