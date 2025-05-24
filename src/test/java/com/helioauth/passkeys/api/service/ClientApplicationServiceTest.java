@@ -40,8 +40,11 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -196,5 +199,48 @@ public class ClientApplicationServiceTest {
         // Validate
         assertTrue(result.isPresent());
         assertEquals(apiKey, result.get().getApiKey());
+    }
+
+    @Test
+    public void testDeleteApiKey_success() {
+        // Setup
+        UUID appId = UUID.randomUUID();
+        ClientApplication application = ClientApplication.builder()
+            .id(appId)
+            .name("Test App")
+            .apiKey("someapikey")
+            .relyingPartyHostname("localhost")
+            .createdAt(Instant.now())
+            .updatedAt(Instant.now())
+            .build();
+
+        when(repository.findById(appId)).thenReturn(Optional.of(application));
+        // Mock repository.save to return the application object after modifying it in the service
+        when(repository.save(any(ClientApplication.class))).thenReturn(application);
+
+        // Execute
+        boolean result = service.deleteApiKey(appId);
+
+        // Validate
+        assertTrue(result);
+        assertNull(application.getApiKey()); // Verify the API key was set to null
+        verify(repository, times(1)).findById(appId);
+        verify(repository, times(1)).save(application); // Verify save was called with the modified object
+    }
+
+    @Test
+    public void testDeleteApiKey_notFound() {
+        // Setup
+        UUID appId = UUID.randomUUID();
+
+        when(repository.findById(appId)).thenReturn(Optional.empty());
+
+        // Execute
+        boolean result = service.deleteApiKey(appId);
+
+        // Validate
+        assertFalse(result);
+        verify(repository, times(1)).findById(appId);
+        verify(repository, never()).save(any(ClientApplication.class)); // Verify save was not called
     }
 }

@@ -16,7 +16,6 @@
 
 package com.helioauth.passkeys.api.service;
 
-import com.helioauth.passkeys.api.domain.ClientApplication;
 import com.helioauth.passkeys.api.domain.ClientApplicationRepository;
 import com.helioauth.passkeys.api.generated.models.AddApplicationRequest;
 import com.helioauth.passkeys.api.generated.models.Application;
@@ -87,6 +86,17 @@ public class ClientApplicationService {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public boolean deleteApiKey(UUID id) {
+        return repository.findById(id)
+            .map(application -> {
+                application.setApiKey(null);
+                repository.save(application);
+                return true;
+            })
+            .orElse(false);
     }
 
     private String generateApiKey() {
